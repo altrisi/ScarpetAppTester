@@ -1,19 +1,12 @@
-package altrisi.scarpetapptester.ScarpetAppTester;
+package altrisi.scarpetapptester;
 
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import carpet.script.CarpetExpression;
 import carpet.settings.SettingsManager;
-import carpet.utils.Messenger;
-
-import java.util.Map;
-
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class ScarpetAppTester implements CarpetExtension, ModInitializer
@@ -23,17 +16,15 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     @Override
     public void onInitialize()
     {
-    	mySettingsManager = new SettingsManager("1.0", "examplemod", "Example Mod");
+    	settingsManager = new SettingsManager("1.0", "examplemod", "Example Mod");
         CarpetServer.manageExtension(this);
     }
 
     @Override
     public void onGameStarted()
     {
-        mySettingsManager.parseSettingsClass(ScarpetAppTesterSettings.class);
-
-    @Override
-    public String version() { return "scarpet-app-tester" }
+        settingsManager.parseSettingsClass(ScarpetAppTesterSettings.class);
+    }
 
     @Override
     public void onServerLoaded(MinecraftServer server)
@@ -68,12 +59,6 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     }
 
     @Override
-    public SettingsManager customSettingsManager()
-    {
-        return mySettingsManager;
-    }
-
-    @Override
     public void onPlayerLoggedIn(ServerPlayerEntity player)
     {
         // You can remove this event if you don't need it
@@ -84,6 +69,9 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     {
         // You can remove this event if you don't need it
     }
+
+    @Override public String version() { return "scarpet-app-tester"; }
+    @Override public SettingsManager customSettingsManager() { return settingsManager; }
     
     @Override
     public void scarpetApi(CarpetExpression expression) {

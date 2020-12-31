@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 
 import static carpet.settings.RuleCategory.CREATIVE;
 
-public class ExampleSimpleSettings
+public class ScarpetAppTesterSettings
 {
     public enum Option
     {

@@ -1,0 +1,35 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Project Automation
+on: 
+  issues:
+    types: [labeled]
+  project_card:
+    types: [moved]
+jobs:
+  Hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Don't fail in my mail!
+        run: echo Hello world!
+  Issues:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled'
+
+    steps:
+      - name: Assign triage
+        uses: alex-page/github-project-automation-plus@v0.5.1
+        if: github.event.label.name == 'triage'
+        with:
+          project: Bug Squashing
+          column: Needs triage
+          repo-token: ${{ secrets.GH_TOKEN }}
+      - name: Don't fail in my mail!
+        run: |
+          echo "The kind label was: ${{ github.event.label.name }}"
+  Cards:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'moved'
+    steps:
+      - name: Label issues based on movement
+        uses: technote-space/auto-card-labeler@v1

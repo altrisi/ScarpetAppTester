@@ -1,6 +1,6 @@
 package altrisi.scarpetapptester.mixins;
 
-import altrisi.scarpetapptester.ExampleSimpleSettings;
+import altrisi.scarpetapptester.ScarpetAppTesterSettings;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.LookControl;
@@ -25,7 +25,7 @@ public abstract class MobEntity_makarenaMixin extends LivingEntity
     @Inject(method = "tick", at = @At("HEAD"))
     private void makarena(CallbackInfo ci)
     {
-        if (ExampleSimpleSettings.makarena && onGround)
+        if (ScarpetAppTesterSettings.makarena && onGround)
         {
             int stage = age % 200;
             if (stage > 155 && world.getClosestPlayer(this, 32.0) != null)

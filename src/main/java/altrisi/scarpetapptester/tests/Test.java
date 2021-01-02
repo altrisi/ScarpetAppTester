@@ -1,6 +1,7 @@
 package altrisi.scarpetapptester.tests;
 
 import altrisi.scarpetapptester.scarpetapi.ScarpetEvents;
+import static altrisi.scarpetapptester.tests.TestStage.*;
 
 public interface Test {
 	/**
@@ -28,16 +29,18 @@ public interface Test {
 	 * Should NOT be overridden, since it should contain all the required code
 	 */
 	default public void run() {
-		// Test preparation (async)
+		if (getTestStage() != WAITING)
+			throw new UnsupportedOperationException("The test has already started!");
+		setStage(ASYNC_PREPARING);
 		prepareTest();
 		
-		// Pre-testing (on MC thread)
+		setStage(SYNC_PREPARING);
 		TestUtils.waitForStep(() -> {
 			preTesting();
 		});
 		TestUtils.waitForSchedules();
 		
-		// Actual testing (on MC thread)
+		setStage(RUNNING);
 		TestUtils.waitForStep(() -> {
 			rightBeforeTestingStarts();
 			runTests();
@@ -45,19 +48,20 @@ public interface Test {
 		});
 		TestUtils.waitForSchedules();
 		
-		// Checking results (async)
+		setStage(ASYNC_CHECKING);
 		testFinishedChecks();
 		
-		// After testing (on MC thread)
+		setStage(SYNC_CHECKING);
 		TestUtils.waitForStep(() -> {
 			afterTesting();
 		});
 		TestUtils.waitForSchedules();
 		
 		// When testing has fully concluded (async)
+		setStage(FINISHING);
 		finishTest();
 		
-		setFinished();
+		setStage(FINISHED);
 	}
 	
 	/**
@@ -92,7 +96,7 @@ public interface Test {
 	
 	/**
 	 * Runs after testing ends.<br>
-	 * Is independent from main thread	
+	 * Is independent from main thread
 	 */
 	void finishTest();
 	
@@ -119,16 +123,6 @@ public interface Test {
 	 * Runs on secondary thread
 	 */
 	void testFinishedChecks();
-	
-	/**
-	 * Whether the test is finished
-	 */
-	public boolean isFinished();
-	
-	/**
-	 * Tell that a test has fully concluded
-	 */
-	void setFinished();
 	
 	/**
 	 * Is called the first of all methods in run,

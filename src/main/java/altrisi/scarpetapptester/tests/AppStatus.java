@@ -1,0 +1,13 @@
+package altrisi.scarpetapptester.tests;
+
+public enum AppStatus {
+	NOT_YET_LOADED,
+	LOADING,
+	JUST_LOADED,
+	PREPARING_TESTS,
+	RUNNING_TESTS,
+	FINISHING_TESTS,
+	CLEANING_UP,
+	UNLOADING,
+	ALREADY_UNLOADED;
+}

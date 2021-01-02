@@ -12,12 +12,10 @@ import altrisi.scarpetapptester.tests.TestUtils;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import carpet.helpers.TickSpeed;
-import carpet.script.CarpetEventServer;
 import carpet.script.CarpetExpression;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 public class ScarpetAppTester implements CarpetExtension, ModInitializer
 {
@@ -32,12 +30,6 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     {
     	//settingsManager = new SettingsManager("1.0", "scarpetapptester", "Scarpet App Tester");
         CarpetServer.manageExtension(this);
-    }
-
-    @Override
-    public void onGameStarted()
-    {
-        //settingsManager.parseSettingsClass(ScarpetAppTesterSettings.class);
     }
 
     @Override
@@ -74,18 +66,6 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 				taskQueue.take().run();
 			} catch (InterruptedException ignored) {}
     	}
-    }
-
-    @Override
-    public void onPlayerLoggedIn(ServerPlayerEntity player)
-    {
-        // You can remove this event if you don't need it
-    }
-
-    @Override
-    public void onPlayerLoggedOut(ServerPlayerEntity player)
-    {
-        // You can remove this event if you don't need it
     }
 
     @Override

@@ -33,6 +33,10 @@ public enum ExceptionTypes {
 			return CARPET_EXPRESSION_EXCEPTION;
 	}
 	
+	/**
+	 * Gets the parent type of an Exception type
+	 * @return the parent exception type, or null if highest
+	 */
 	public ExceptionTypes getParentType() {
 		switch(this) {
 			case INTERNAL_EXPRESSION_EXCEPTION:

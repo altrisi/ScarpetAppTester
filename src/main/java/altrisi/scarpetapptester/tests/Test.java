@@ -3,15 +3,21 @@ package altrisi.scarpetapptester.tests;
 import altrisi.scarpetapptester.scarpetapi.ScarpetEvents;
 
 public interface Test {
-	String getAppName();
+	/**
+	 * @return the {@link App} that is being tested
+	 */
+	App getApp();
 	
+	/**
+	 * @return the name of the test
+	 */
 	String getTestName();
 	
 	/**
 	 * Runs before testing starts, waiting for schedules to
 	 * finish before actually starting the tests<br>
 	 * By default, calls Scarpet test handlers<br>
-	 * Gets queued into main thread, on next tick	
+	 * Gets queued into main thread, on next tick
 	 */
 	default void preTesting() {
 		ScarpetEvents.PRE_TEST_STARTED.dispatch(this);
@@ -19,14 +25,19 @@ public interface Test {
 	
 	/**
 	 * Runs the test and all its precendents and antecedents
-	 * Should NOT be overriden, since it should contain all the required code
+	 * Should NOT be overridden, since it should contain all the required code
 	 */
 	default public void run() {
+		// Test preparation (async)
+		prepareTest();
+		
+		// Pre-testing (on MC thread)
 		TestUtils.waitForStep(() -> {
 			preTesting();
 		});
 		TestUtils.waitForSchedules();
 		
+		// Actual testing (on MC thread)
 		TestUtils.waitForStep(() -> {
 			rightBeforeTestingStarts();
 			runTests();
@@ -34,14 +45,19 @@ public interface Test {
 		});
 		TestUtils.waitForSchedules();
 		
+		// Checking results (async)
+		testFinishedChecks();
 		
-		
+		// After testing (on MC thread)
 		TestUtils.waitForStep(() -> {
 			afterTesting();
 		});
 		TestUtils.waitForSchedules();
 		
+		// When testing has fully concluded (async)
 		finishTest();
+		
+		setFinished();
 	}
 	
 	/**
@@ -75,7 +91,7 @@ public interface Test {
 	}
 	
 	/**
-	 * Runs after testing ends.
+	 * Runs after testing ends.<br>
 	 * Is independent from main thread	
 	 */
 	void finishTest();
@@ -89,8 +105,8 @@ public interface Test {
 	
 	/**
 	 * This function defines what should be run for a test<br>
-	 * This shouldn't include pre-testing or post-testing content,
-	 * and shouldn't be called directly.
+	 * This is NOT the function to start the test.<br>
+	 * Runs in main thread
 	 * @see #run()
 	 */
 	void runTests();
@@ -103,6 +119,34 @@ public interface Test {
 	 * Runs on secondary thread
 	 */
 	void testFinishedChecks();
+	
+	/**
+	 * Whether the test is finished
+	 */
+	public boolean isFinished();
+	
+	/**
+	 * Tell that a test has fully concluded
+	 */
+	void setFinished();
+	
+	/**
+	 * Is called the first of all methods in run,
+	 * in secondary thread, in order to prepare the environment to be ready.
+	 * Runs before {@link #preTesting()}, which is in main thread
+	 */
+	void prepareTest();
+	
+	/**
+	 * Sets the test stage to the specified one
+	 * @param stage The stage to set
+	 */
+	void setStage(TestStage stage);
+	
+	/**
+	 * @return Current {@link TestStage}
+	 */
+	TestStage getTestStage();
 	
 	public TestResults getResults();
 }

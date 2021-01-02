@@ -7,11 +7,6 @@ on:
   project_card:
     types: [moved]
 jobs:
-  Hello:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Don't fail in my mail!
-        run: echo Hello world!
   Issues:
     runs-on: ubuntu-latest
     if: github.event.action == 'labeled'
@@ -27,6 +22,24 @@ jobs:
       - name: Don't fail in my mail!
         run: |
           echo "The kind label was: ${{ github.event.label.name }}"
+      - name: Assign progress tracking
+        uses: alex-page/github-project-automation-plus@v0.5.1
+        if: github.event.label.name == 'accepted feature'
+        with:
+          project: Progress tracking
+          column: To do
+          repo-token: ${{ secrets.GH_TOKEN }}
+      - uses: actions/github-script@v3
+        if: github.event.label.name == 'accepted feature'
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['to do']
+            })
   Cards:
     runs-on: ubuntu-latest
     if: github.event.action == 'moved'

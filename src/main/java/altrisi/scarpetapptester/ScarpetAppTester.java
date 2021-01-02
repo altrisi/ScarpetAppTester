@@ -1,9 +1,14 @@
 package altrisi.scarpetapptester;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import altrisi.scarpetapptester.exceptionhandling.ExceptionStorage;
+import altrisi.scarpetapptester.scarpetapi.ScarpetAPIFunctions;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
+import carpet.helpers.TickSpeed;
 import carpet.script.CarpetExpression;
-import carpet.settings.SettingsManager;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
@@ -11,19 +16,22 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class ScarpetAppTester implements CarpetExtension, ModInitializer
 {
-    private static SettingsManager settingsManager;
-    
+    //private static SettingsManager settingsManager;
+    public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
+    private static ExceptionStorage exceptionStorage;
+    public static LogWritter writter;
+
     @Override
     public void onInitialize()
     {
-    	settingsManager = new SettingsManager("1.0", "examplemod", "Example Mod");
+    	//settingsManager = new SettingsManager("1.0", "scarpetapptester", "Scarpet App Tester");
         CarpetServer.manageExtension(this);
     }
 
     @Override
     public void onGameStarted()
     {
-        settingsManager.parseSettingsClass(ScarpetAppTesterSettings.class);
+        //settingsManager.parseSettingsClass(ScarpetAppTesterSettings.class);
     }
 
     @Override
@@ -36,26 +44,9 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     
     @Override
     public void onServerLoadedWorlds(MinecraftServer server) {
-    	// Happens when the server has loaded itself AND the worlds
-    	// You can remove this event if you don't need it
-    }
-    
-    @Override
-    public void onReload(MinecraftServer server) {
-    	// Happens when the server reloads (usually /reload command)
-    	// You can remove this event if you don't need it
-    }
-    
-    @Override
-    public void onServerClosed(MinecraftServer server) {
-    	// Happens when the server closes. Can happen multiple times in singleplayer
-    	// You can remove this event if you don't need it
-    }
-
-    @Override
-    public void onTick(MinecraftServer server)
-    {
-        // no need to add this.
+        TickSpeed.is_paused = true; // TODO Make this forwards-compatible
+        writter = new LogWritter();
+        exceptionStorage = new ExceptionStorage();
     }
 
     @Override
@@ -70,13 +61,22 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
         // You can remove this event if you don't need it
     }
 
+    @Override
+    public void onServerClosed(MinecraftServer server) {
+    	writter.close(getExceptionStorage());
+    }
     @Override public String version() { return "scarpet-app-tester"; }
-    @Override public SettingsManager customSettingsManager() { return settingsManager; }
+    //@Override public SettingsManager customSettingsManager() { return settingsManager; }
     
     @Override
     public void scarpetApi(CarpetExpression expression) {
-    	// Use this to add your own methods to Scarpet
-    	// Check javadocs for more details
-    	// As with everything, you can remove this if you don't need it
+    	ScarpetAPIFunctions.apply(expression);
     }
+
+	/**
+	 * @return the exceptionStorage
+	 */
+	public static ExceptionStorage getExceptionStorage() {
+		return exceptionStorage;
+	}
 }

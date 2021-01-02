@@ -7,6 +7,10 @@ repositories {
 	maven {
 		url 'https://masa.dy.fi/maven'
 	}
+	maven {
+		name = "JitPack"
+		url = "https://jitpack.io"
+	}
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -26,8 +30,9 @@ dependencies {
 	// Fabric API. This is not necessary, but you can use it if you want
 	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
+	modRuntime ("com.github.SuperCoder7979:databreaker:0.2.6") {
+		exclude module: "fabric-loader"
+	}
 }
 
 processResources {

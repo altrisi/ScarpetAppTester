@@ -1,13 +1,18 @@
 package altrisi.scarpetapptester;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import altrisi.scarpetapptester.exceptionhandling.ExceptionStorage;
 import altrisi.scarpetapptester.scarpetapi.ScarpetAPIFunctions;
+import altrisi.scarpetapptester.tests.TestUtils;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import carpet.helpers.TickSpeed;
+import carpet.script.CarpetEventServer;
 import carpet.script.CarpetExpression;
 
 import net.fabricmc.api.ModInitializer;
@@ -20,6 +25,7 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
     private static ExceptionStorage exceptionStorage;
     public static LogWritter writter;
+    private static BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<Runnable>();
 
     @Override
     public void onInitialize()
@@ -47,6 +53,27 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
         TickSpeed.is_paused = true; // TODO Make this forwards-compatible
         writter = new LogWritter();
         exceptionStorage = new ExceptionStorage();
+    }
+    
+    @Override
+    public void onTick(MinecraftServer server) {
+    	if (TestUtils.waitingForSchedules && CarpetServer.scriptServer.events.scheduledCalls.isEmpty()) {
+			synchronized (TestUtils.scheduleLock) {
+				TestUtils.scheduleLock.notify();
+				TestUtils.waitingForSchedules = false;
+			}
+		}
+    	if (TestUtils.waitingForRunnable) {
+    		synchronized (TestUtils.stepLock) {
+				TestUtils.stepLock.notify();
+				TestUtils.waitingForRunnable = false;
+			}
+    	}
+    	while(!taskQueue.isEmpty()){
+    		try {
+				taskQueue.take().run();
+			} catch (InterruptedException ignored) {}
+    	}
     }
 
     @Override
@@ -78,5 +105,13 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 	 */
 	public static ExceptionStorage getExceptionStorage() {
 		return exceptionStorage;
+	}
+	
+	/**
+	 * 
+	 * @return the taskQueue
+	 */
+	public static BlockingQueue<Runnable> getTaskQueue() {
+		return taskQueue;
 	}
 }

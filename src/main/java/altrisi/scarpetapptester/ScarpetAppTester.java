@@ -1,7 +1,6 @@
 package altrisi.scarpetapptester;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +22,7 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
     private static ExceptionStorage exceptionStorage;
     public static LogWritter writter;
-    private static BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<Runnable>();
+    private static SynchronousQueue<Runnable> taskQueue = new SynchronousQueue<Runnable>();
 
     @Override
     public void onInitialize()
@@ -49,22 +48,13 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     
     @Override
     public void onTick(MinecraftServer server) {
-    	if (TestUtils.waitingForSchedules && CarpetServer.scriptServer.events.scheduledCalls.isEmpty()) {
-			synchronized (TestUtils.scheduleLock) {
-				TestUtils.scheduleLock.notify();
-				TestUtils.waitingForSchedules = false;
-			}
+    	if (CarpetServer.scriptServer.events.scheduledCalls.isEmpty()) {
+			TestUtils.getSchedulesLatch().countDown();
 		}
-    	if (TestUtils.waitingForRunnable) {
-    		synchronized (TestUtils.stepLock) {
-				TestUtils.stepLock.notify();
-				TestUtils.waitingForRunnable = false;
-			}
-    	}
-    	while(!taskQueue.isEmpty()){
-    		try {
-				taskQueue.take().run();
-			} catch (InterruptedException ignored) {}
+    	TestUtils.getStepLatch().countDown(); // On purpose, 1 tick later
+    	Runnable task = taskQueue.poll();
+    	if (task != null) {
+    		task.run();
     	}
     }
 
@@ -73,7 +63,6 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     	writter.close(getExceptionStorage());
     }
     @Override public String version() { return "scarpet-app-tester"; }
-    //@Override public SettingsManager customSettingsManager() { return settingsManager; }
     
     @Override
     public void scarpetApi(CarpetExpression expression) {
@@ -88,10 +77,9 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 	}
 	
 	/**
-	 * 
 	 * @return the taskQueue
 	 */
-	public static BlockingQueue<Runnable> getTaskQueue() {
+	public static SynchronousQueue<Runnable> getTaskQueue() {
 		return taskQueue;
 	}
 }

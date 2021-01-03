@@ -2,7 +2,7 @@ package altrisi.scarpetapptester.tests;
 
 public interface App {
 	/**
-	 * @return the app name
+	 * @return The app's name
 	 */
 	public String getName();
 	
@@ -15,7 +15,7 @@ public interface App {
 	/**
 	 * @return The current testing status of the app
 	 */
-	public AppStatus getAppStatus();
+	public AppStatus getCurrentStatus();
 	
 	void setStatus(AppStatus status);
 	

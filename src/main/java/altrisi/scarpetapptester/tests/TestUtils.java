@@ -1,21 +1,20 @@
 package altrisi.scarpetapptester.tests;
 
+import java.util.concurrent.CountDownLatch;
+
 import altrisi.scarpetapptester.ScarpetAppTester;
-import altrisi.scarpetapptester.fakes.Lock;
 
 public class TestUtils {
-	public static Lock scheduleLock = new Lock();
-	public static Lock stepLock = new Lock();
-	public static boolean waitingForSchedules = false;
-	public static boolean waitingForRunnable = false; 
+	private static CountDownLatch stepLatch = new CountDownLatch(0);
+	private static CountDownLatch schedulesLatch = new CountDownLatch(0); 
+	
+	// TODO CountdownLatch en vez de esto
 	
 	public static void waitForSchedules() {
-		waitingForSchedules = true;
-		synchronized (scheduleLock) {
-			try {
-				scheduleLock.wait();
-			} catch (InterruptedException ignored) {}
-		}
+		try {
+			schedulesLatch = new CountDownLatch(1);
+			schedulesLatch.await();
+		} catch (InterruptedException ignored) {}
 	}
 
 	/**
@@ -24,12 +23,20 @@ public class TestUtils {
 	 * @param step The {@link Runnable} to execute next tick
 	 */
 	public static void waitForStep(Runnable step) {
-		waitingForRunnable = true;
-		ScarpetAppTester.getTaskQueue().add(step);
-		synchronized (stepLock) {
-			try {
-				stepLock.wait();
-			} catch (InterruptedException ignored) {}
+		try {
+			ScarpetAppTester.getTaskQueue().put(step);
+			stepLatch = new CountDownLatch(1);
+			stepLatch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+	}
+	
+	public static CountDownLatch getStepLatch() {
+		return stepLatch;
+	}
+	
+	public static CountDownLatch getSchedulesLatch() {
+		return schedulesLatch;
 	}
 }

@@ -14,7 +14,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import static altrisi.scarpetapptester.ScarpetAppTester.LOGGER;; 
 
 /**
- * Note: This is very much unfinished
+ * Note: This is very much unfinished.
+ * It will probably even be completely redone
  * @author altrisi
  *
  */

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Sorry. I know this is bad. But it works kinda well
+ * Sorry. I know this is bad. But I suppose it'll work
  * @author altrisi
  */
 @SuppressWarnings("serial")
@@ -19,7 +19,7 @@ public class ExceptionStorage extends ArrayList<ScarpetException> {
 	 * @return The last registered exception
 	 */
 	public ScarpetException getLast() {
-		return get(size()-1);
+		return get(size() - 1);
 	}
 	
 	@Override

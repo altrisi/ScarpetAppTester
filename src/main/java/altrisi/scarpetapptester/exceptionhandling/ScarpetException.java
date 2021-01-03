@@ -116,7 +116,8 @@ public class ScarpetException {
 	}
 	
 	public String getChatMessage() {
-		checkDataAvailability();
+		if (type == INTERNAL_EXPRESSION_EXCEPTION)
+			throw new UnsupportedOperationException("Internal exceptions don't provide that data!");
 		return chatMessage;
 	}
 	

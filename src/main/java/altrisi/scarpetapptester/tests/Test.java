@@ -7,12 +7,12 @@ public interface Test {
 	/**
 	 * @return the {@link App} that is being tested
 	 */
-	App getApp();
+	public App getApp();
 	
 	/**
 	 * @return the name of the test
 	 */
-	String getTestName();
+	public String getTestName();
 	
 	/**
 	 * Runs before testing starts, waiting for schedules to
@@ -57,7 +57,6 @@ public interface Test {
 		});
 		TestUtils.waitForSchedules();
 		
-		// When testing has fully concluded (async)
 		setStage(FINISHING);
 		finishTest();
 		
@@ -101,11 +100,11 @@ public interface Test {
 	void finishTest();
 	
 	/**
-	 * Is called by the test_finished Scarpet event, to 
+	 * Is called by the test_finished Scarpet event dispatcher, to 
 	 * provide data to the testing assist app
 	 * @return Whether or not tests are good so far
 	 */
-	boolean successfulSoFar();
+	public boolean successfulSoFar();
 	
 	/**
 	 * This function defines what should be run for a test<br>
@@ -134,13 +133,14 @@ public interface Test {
 	/**
 	 * Sets the test stage to the specified one
 	 * @param stage The stage to set
+	 * @throws UnsupportedOperationException if test is already FINISHED
 	 */
 	void setStage(TestStage stage);
 	
 	/**
 	 * @return Current {@link TestStage}
 	 */
-	TestStage getTestStage();
+	public TestStage getTestStage();
 	
 	public TestResults getResults();
 }

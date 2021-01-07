@@ -1,7 +1,10 @@
-package altrisi.scarpetapptester.tests;
+package altrisi.scarpetapptester.testing.tests;
 
+import static altrisi.scarpetapptester.testing.tests.TestStage.*;
+
+import altrisi.scarpetapptester.ThreadingUtils;
 import altrisi.scarpetapptester.scarpetapi.ScarpetEvents;
-import static altrisi.scarpetapptester.tests.TestStage.*;
+import altrisi.scarpetapptester.testing.apps.App;
 
 public interface Test {
 	/**
@@ -12,7 +15,7 @@ public interface Test {
 	/**
 	 * @return the name of the test
 	 */
-	public String getTestName();
+	public String getName();
 	
 	/**
 	 * Runs before testing starts, waiting for schedules to
@@ -35,27 +38,27 @@ public interface Test {
 		prepareTest();
 		
 		setStage(SYNC_PREPARING);
-		TestUtils.waitForStep(() -> {
+		ThreadingUtils.waitForStep(() -> {
 			preTesting();
 		});
-		TestUtils.waitForSchedules();
+		ThreadingUtils.waitForSchedules();
 		
 		setStage(RUNNING);
-		TestUtils.waitForStep(() -> {
+		ThreadingUtils.waitForStep(() -> {
 			rightBeforeTestingStarts();
 			runTests();
 			rightAfterTestingStarts();
 		});
-		TestUtils.waitForSchedules();
+		ThreadingUtils.waitForSchedules();
 		
 		setStage(ASYNC_CHECKING);
 		testFinishedChecks();
 		
 		setStage(SYNC_CHECKING);
-		TestUtils.waitForStep(() -> {
+		ThreadingUtils.waitForStep(() -> {
 			afterTesting();
 		});
-		TestUtils.waitForSchedules();
+		ThreadingUtils.waitForSchedules();
 		
 		setStage(FINISHING);
 		finishTest();

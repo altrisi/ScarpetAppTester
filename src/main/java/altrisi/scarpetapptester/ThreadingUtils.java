@@ -1,10 +1,8 @@
-package altrisi.scarpetapptester.tests;
+package altrisi.scarpetapptester;
 
 import java.util.concurrent.CountDownLatch;
 
-import altrisi.scarpetapptester.ScarpetAppTester;
-
-public class TestUtils {
+public class ThreadingUtils {
 	private static CountDownLatch stepLatch = new CountDownLatch(0);
 	private static CountDownLatch schedulesLatch = new CountDownLatch(0);
 	
@@ -12,7 +10,7 @@ public class TestUtils {
 		try {
 			schedulesLatch = new CountDownLatch(1);
 			schedulesLatch.await();
-		} catch (InterruptedException ignored) {}
+		} catch (InterruptedException e) { AppTesterThread.interrupted(e); }
 	}
 
 	/**
@@ -25,9 +23,7 @@ public class TestUtils {
 			ScarpetAppTester.getTaskQueue().put(step);
 			stepLatch = new CountDownLatch(1);
 			stepLatch.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		} catch (InterruptedException e) { AppTesterThread.interrupted(e); }
 	}
 	
 	public static CountDownLatch getStepLatch() {

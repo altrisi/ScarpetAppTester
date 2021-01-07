@@ -27,7 +27,7 @@ Schedules from this event, the test itself, or `__on_right_after_test_started` w
 
 Runs _right after_ the test starts, without waiting for any schedules from it or `__on_right_before_test_started`.
 
-Schedules from this event, the test itself, or `__on_before_after_test_started` will be processed before concluding the test
+Schedules from this event, the test itself, or `__on_right_before_test_started` will be processed before concluding the test
 
 ### `__on_test_finished(appName, testName, successfulSoFar`
 

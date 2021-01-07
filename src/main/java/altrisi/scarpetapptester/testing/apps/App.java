@@ -1,4 +1,6 @@
-package altrisi.scarpetapptester.tests;
+package altrisi.scarpetapptester.testing.apps;
+
+import altrisi.scarpetapptester.testing.tests.Test;
 
 public interface App {
 	/**

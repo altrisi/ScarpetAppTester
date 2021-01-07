@@ -1,6 +1,6 @@
 package altrisi.scarpetapptester.scarpetapi;
 
-import altrisi.scarpetapptester.tests.TestSubject;
+import altrisi.scarpetapptester.testing.subjects.TestSubject;
 import carpet.script.value.FrameworkValue;
 import carpet.script.value.Value;
 

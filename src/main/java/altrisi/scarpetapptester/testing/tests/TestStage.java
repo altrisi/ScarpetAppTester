@@ -1,4 +1,4 @@
-package altrisi.scarpetapptester.tests;
+package altrisi.scarpetapptester.testing.tests;
 
 public enum TestStage {
 	/**

@@ -22,9 +22,9 @@ import static altrisi.scarpetapptester.ScarpetAppTester.LOGGER;;
 public class LogWritter {
 	private BufferedWriter logWritter;
     LogWritter() {
-    	String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+    	String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
     	Path logPath = FabricLoader.getInstance().getGameDir()
-    					.resolve("results").resolve("results-"+now+".txt").toAbsolutePath();
+    					.resolve("results").resolve("result-"+now+".txt").toAbsolutePath();
     	try {
     		Files.createDirectories(logPath.getParent());
 			Files.createFile(logPath);

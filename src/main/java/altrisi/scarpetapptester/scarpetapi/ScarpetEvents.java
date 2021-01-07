@@ -3,7 +3,7 @@ package altrisi.scarpetapptester.scarpetapi;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import altrisi.scarpetapptester.tests.Test;
+import altrisi.scarpetapptester.testing.tests.Test;
 import carpet.CarpetServer;
 import carpet.script.value.NumericValue;
 import carpet.script.value.StringValue;
@@ -23,7 +23,7 @@ public abstract class ScarpetEvents extends Event {
 	public static final ScarpetEvents PRE_TEST_STARTED = new ScarpetEvents("pre_test_started", 2, false) {
 		public void dispatch(Test test) {
 			this.handler.call(() -> {
-				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getTestName()));
+				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getName()));
 			}, SOURCE_SUPPLIER);
 		}
 	};
@@ -31,7 +31,7 @@ public abstract class ScarpetEvents extends Event {
 	public static final ScarpetEvents RIGHT_BEFORE_TEST_STARTED = new ScarpetEvents("right_before_test_started", 2, false) {
 		public void dispatch(Test test) {
 			this.handler.call(() -> {
-				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getTestName()));
+				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getName()));
 			}, SOURCE_SUPPLIER);
 		}
 	};
@@ -39,7 +39,7 @@ public abstract class ScarpetEvents extends Event {
 	public static final ScarpetEvents RIGHT_AFTER_TEST_STARTED = new ScarpetEvents("right_after_test_started", 2, false) {
 		public void dispatch(Test test) {
 			this.handler.call(() -> {
-				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getTestName()));
+				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getName()));
 			}, SOURCE_SUPPLIER);
 		}
 	};
@@ -47,7 +47,7 @@ public abstract class ScarpetEvents extends Event {
 	public static final ScarpetEvents TEST_FINISHED = new ScarpetEvents("test_finished", 3, false) {
 		public void dispatch(Test test) {
 			this.handler.call(() -> {
-				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getTestName()), new NumericValue(test.successfulSoFar()));
+				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getName()), new NumericValue(test.successfulSoFar()));
 			}, SOURCE_SUPPLIER);
 		}
 	};

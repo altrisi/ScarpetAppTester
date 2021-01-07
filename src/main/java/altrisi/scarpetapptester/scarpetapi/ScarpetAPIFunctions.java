@@ -3,7 +3,7 @@ package altrisi.scarpetapptester.scarpetapi;
 import java.util.ArrayList;
 import java.util.List;
 
-import altrisi.scarpetapptester.tests.TestSubject;
+import altrisi.scarpetapptester.testing.subjects.TestSubject;
 import carpet.script.CarpetContext;
 import carpet.script.CarpetEventServer;
 import carpet.script.Expression;
@@ -24,7 +24,7 @@ public class ScarpetAPIFunctions {
             if (!(evaling instanceof TestSubjectValue))
             	throw new InternalExpressionException("Second argument of create_and_get_test must be a TestSubject");
             TestSubject subject = ((TestSubjectValue) evaling).getSubject();
-            List<CarpetEventServer.ScheduledCall> calls = new ArrayList<CarpetEventServer.ScheduledCall>();
+            List<CarpetEventServer.ScheduledCall> calls = new ArrayList<CarpetEventServer.ScheduledCall>(4);
             for (int i = 2; i < 6; i++) {
             	FunctionArgument<LazyValue> function = FunctionArgument.findIn(c, expression.module, lv, i, true, false);
             	calls.add(new CarpetEventServer.ScheduledCall((CarpetContext)c, function.function, FunctionValue.resolveArgs(function.args, c, t), 0));

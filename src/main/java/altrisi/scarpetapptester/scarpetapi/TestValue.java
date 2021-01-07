@@ -1,8 +1,8 @@
 package altrisi.scarpetapptester.scarpetapi;
 
-import altrisi.scarpetapptester.tests.ScarpetGeneratedTest;
-import altrisi.scarpetapptester.tests.Test;
-import altrisi.scarpetapptester.tests.TestSubject;
+import altrisi.scarpetapptester.testing.subjects.TestSubject;
+import altrisi.scarpetapptester.testing.tests.ScarpetGeneratedTest;
+import altrisi.scarpetapptester.testing.tests.Test;
 import carpet.script.CarpetEventServer.ScheduledCall;
 import carpet.script.value.FrameworkValue;
 
@@ -44,7 +44,7 @@ public class TestValue extends FrameworkValue {
 	
 	@Override
 	public String getString() {
-		return test.getTestName();
+		return test.getName();
 	}
 
 }

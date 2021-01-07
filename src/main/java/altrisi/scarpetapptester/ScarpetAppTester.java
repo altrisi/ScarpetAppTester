@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import altrisi.scarpetapptester.exceptionhandling.ExceptionStorage;
 import altrisi.scarpetapptester.scarpetapi.ScarpetAPIFunctions;
-import altrisi.scarpetapptester.tests.TestUtils;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import carpet.helpers.TickSpeed;
@@ -15,12 +14,15 @@ import carpet.script.CarpetExpression;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.crash.CrashException;
 
 public class ScarpetAppTester implements CarpetExtension, ModInitializer
 {
-    //private static SettingsManager settingsManager;
     public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
+    private static Thread asyncThread;
     private static ExceptionStorage exceptionStorage;
+    //I'm going to regret this:
+    private CrashException rethrowMe = null;
     public static LogWritter writter;
     private static SynchronousQueue<Runnable> taskQueue = new SynchronousQueue<Runnable>();
 
@@ -44,14 +46,31 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
         TickSpeed.is_paused = true; // TODO Make this forwards-compatible
         writter = new LogWritter();
         exceptionStorage = new ExceptionStorage();
+        asyncThread = new Thread(AppTesterThread.INSTANCE);
+        asyncThread.setName("Scarpet App Tester Thread");
+        asyncThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				if (e instanceof CrashException)
+					rethrowMe = (CrashException)e;
+				try{
+					AppTesterThread.interrupted(e);
+				}catch (CrashException e2) {
+					rethrowMe = e2;
+				}
+			}
+		});
+        asyncThread.start();
     }
     
     @Override
     public void onTick(MinecraftServer server) {
+    	if (rethrowMe != null)
+    		throw rethrowMe;
     	if (CarpetServer.scriptServer.events.scheduledCalls.isEmpty()) {
-			TestUtils.getSchedulesLatch().countDown();
+			ThreadingUtils.getSchedulesLatch().countDown();
 		}
-    	TestUtils.getStepLatch().countDown(); // On purpose, 1 tick later
+    	ThreadingUtils.getStepLatch().countDown(); // On purpose, 1 tick later
     	Runnable task = taskQueue.poll();
     	if (task != null) {
     		task.run();

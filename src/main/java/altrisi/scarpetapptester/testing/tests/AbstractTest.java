@@ -1,6 +1,8 @@
-package altrisi.scarpetapptester.tests;
+package altrisi.scarpetapptester.testing.tests;
 
-public abstract class AbstractTest implements Test {
+import altrisi.scarpetapptester.testing.apps.App;
+
+abstract class AbstractTest implements Test {
 	protected final App app;
 	protected final String name;
 	protected TestStage stage = TestStage.WAITING;
@@ -17,7 +19,7 @@ public abstract class AbstractTest implements Test {
 	}
 	
 	@Override
-	public String getTestName() {
+	public String getName() {
 		return name;
 	}
 

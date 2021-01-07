@@ -1,4 +1,4 @@
-package altrisi.scarpetapptester.tests;
+package altrisi.scarpetapptester.testing.apps;
 
 /**
  * The status of an {@link App} that has been scheduled

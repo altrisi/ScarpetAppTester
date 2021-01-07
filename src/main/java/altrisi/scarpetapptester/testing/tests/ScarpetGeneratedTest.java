@@ -1,6 +1,7 @@
-package altrisi.scarpetapptester.tests;
+package altrisi.scarpetapptester.testing.tests;
 
 import altrisi.scarpetapptester.AppTesterThread;
+import altrisi.scarpetapptester.testing.subjects.TestSubject;
 import carpet.script.CarpetEventServer.ScheduledCall;
 
 public class ScarpetGeneratedTest extends AbstractTest {

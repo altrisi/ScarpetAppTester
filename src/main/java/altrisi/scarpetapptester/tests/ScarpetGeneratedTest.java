@@ -1,27 +1,19 @@
 package altrisi.scarpetapptester.tests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import altrisi.scarpetapptester.AppTesterThread;
-import carpet.script.Context;
-import carpet.script.LazyValue;
-import carpet.script.value.FunctionValue;
-import carpet.script.value.StringValue;
+import carpet.script.CarpetEventServer.ScheduledCall;
 
 public class ScarpetGeneratedTest extends AbstractTest {
-	private FunctionValue prepare, pre, post, check;
+	private ScheduledCall prepare, pre, post, check;
 	private TestSubject testSubject;
-	private Context context;
 	
-	public ScarpetGeneratedTest(String name, TestSubject test, FunctionValue prepare, FunctionValue pre, FunctionValue post, FunctionValue check, Context ctx) {
-		super(AppTesterThread.INSTANCE.getCurrentApp(), name);
+	public ScarpetGeneratedTest(String name, TestSubject test, ScheduledCall prepare, ScheduledCall pre, ScheduledCall post, ScheduledCall check) {
+		super(AppTesterThread.INSTANCE.getCurrentApp(), name); // We can't (I don't want to, would need new Value) to allow specifying apps
 		this.prepare = prepare;
 		this.pre = pre;
 		this.post = post;
 		this.testSubject = test;
 		this.check = check;
-		this.context = ctx;
 	}
 
 	@Override
@@ -31,33 +23,25 @@ public class ScarpetGeneratedTest extends AbstractTest {
 	
 	@Override
 	public void preTesting() {
-		callWithArgs(prepare);
+		prepare.execute();;
 	}
 	
 	@Override
 	public void rightBeforeTestingStarts() {
-		callWithArgs(pre);
+		pre.execute();;
 	}
 	
 	@Override
 	public void rightAfterTestingStarts() {
-		callWithArgs(post);
+		post.execute();
 	}
 	
 	@Override
 	public void afterTesting() {
-		callWithArgs(check);
+		check.execute();
 	}
 
-	private void callWithArgs(FunctionValue function) {
-		if (function == null) return;
-		List<LazyValue> params = new ArrayList<LazyValue>();
-		params.add((c, t) -> new StringValue(getTestName()));
-		params.add((c, t) -> new StringValue(getTestStage().toString().toLowerCase()));
-		function.callInContext(context, 0, params);
-	}
-
-	// We can't use those, since we need to run on main thread
+	// We can't use those, since we need to run on main thread (not really "need", but are probably expected to)
 	@Override public boolean successfulSoFar() { return true; }
 	@Override public void testFinishedChecks() { }
 	@Override public void finishTest() { }

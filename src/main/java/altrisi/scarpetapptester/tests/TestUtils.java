@@ -6,9 +6,7 @@ import altrisi.scarpetapptester.ScarpetAppTester;
 
 public class TestUtils {
 	private static CountDownLatch stepLatch = new CountDownLatch(0);
-	private static CountDownLatch schedulesLatch = new CountDownLatch(0); 
-	
-	// TODO CountdownLatch en vez de esto
+	private static CountDownLatch schedulesLatch = new CountDownLatch(0);
 	
 	public static void waitForSchedules() {
 		try {

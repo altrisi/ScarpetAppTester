@@ -3,36 +3,34 @@ package altrisi.scarpetapptester.scarpetapi;
 import altrisi.scarpetapptester.tests.ScarpetGeneratedTest;
 import altrisi.scarpetapptester.tests.Test;
 import altrisi.scarpetapptester.tests.TestSubject;
-import carpet.script.Context;
-import carpet.script.value.FunctionValue;
-import carpet.script.value.Value;
-import net.minecraft.nbt.Tag;
+import carpet.script.CarpetEventServer.ScheduledCall;
+import carpet.script.value.FrameworkValue;
 
-public class TestValue extends Value {
-	private Test test;
+public class TestValue extends FrameworkValue {
+	private final Test test;
 	
+	/**
+	 * Creates a {@link TestValue} out of a {@link Test}
+	 * @param test The {@link Test} associated with this {@link TestValue}
+	 */
 	public TestValue(Test test) {
 		this.test = test;
 	}
 	
 	/**
-	 * Creates a new Test from Scarpet
+	 * Creates a new {@link Test} from Scarpet
 	 * @param name The test from Scarpet
-	 * @param function The function to test TODO Change this to a proper thing that can test commands, etc
+	 * @param function The function to test
 	 * @param prepare What to run a lot before tests
 	 * @param pre What to run right before tests start
 	 * @param post What to run right after tests start
 	 * @param check What to run after tests have concluded
-	 * @return The new Test wrapped into a TestValue
+	 * @return The new {@link Test} wrapped into a {@link TestValue}
 	 */
-	public static TestValue createNewTest(String name, TestSubject fn, FunctionValue prepare, FunctionValue pre, FunctionValue post, FunctionValue check, Context ctx) {
-		return new TestValue(new ScarpetGeneratedTest(name, fn, prepare, pre, post, check, ctx));
-	}
+	public static TestValue createNewTest(String name, TestSubject fn, ScheduledCall prepare, ScheduledCall pre, ScheduledCall post, ScheduledCall check) {
+		return new TestValue(new ScarpetGeneratedTest(name, fn, prepare, pre, post, check));
+	} //TODO Add it to the current App's test pool
 	
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException("You can't clone tests!");
-	}
 	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof TestValue))
@@ -47,16 +45,6 @@ public class TestValue extends Value {
 	@Override
 	public String getString() {
 		return test.getTestName();
-	}
-
-	@Override
-	public boolean getBoolean() {
-		return test.successfulSoFar();
-	}
-
-	@Override
-	public Tag toTag(boolean force) {
-		return null;
 	}
 
 }

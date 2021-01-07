@@ -66,7 +66,7 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     
     @Override
     public void scarpetApi(CarpetExpression expression) {
-    	ScarpetAPIFunctions.apply(expression);
+    	ScarpetAPIFunctions.apply(expression.getExpr());
     }
 
 	/**

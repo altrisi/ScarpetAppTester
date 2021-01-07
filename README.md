@@ -9,3 +9,7 @@ In order to run this, you have two options:
 
 - Wait for me to have time and will to make it at least work
 - Code it yourself, make a PR, and wait for more instructions
+
+## Scarpet Docs
+
+Even though this isn't ready by far, some docs for Test checker apps are already available, you can check those [here](docs/ScarpetDocs.md). 

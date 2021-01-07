@@ -7,7 +7,9 @@ public enum AppTesterThread {
 	
 	private App currentApp = null;
 	
-	
+	/**
+	 * @return The current instance of {@link App} being tested
+	 */
 	public App getCurrentApp() {
 		return currentApp;
 	}

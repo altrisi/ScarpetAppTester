@@ -2,10 +2,9 @@ package altrisi.scarpetapptester;
 
 import java.util.concurrent.SynchronousQueue;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
-import altrisi.scarpetapptester.exceptionhandling.ExceptionStorage;
+import altrisi.scarpetapptester.mixins.Util_threadCrasherMixin;
 import altrisi.scarpetapptester.scarpetapi.ScarpetAPIFunctions;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
@@ -18,18 +17,14 @@ import net.minecraft.util.crash.CrashException;
 
 public class ScarpetAppTester implements CarpetExtension, ModInitializer
 {
-    public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
+	@NotNull
     private static Thread asyncThread;
-    private static ExceptionStorage exceptionStorage;
-    //I'm going to regret this:
-    private CrashException rethrowMe = null;
     public static LogWritter writter;
     private static SynchronousQueue<Runnable> taskQueue = new SynchronousQueue<Runnable>();
 
     @Override
     public void onInitialize()
     {
-    	//settingsManager = new SettingsManager("1.0", "scarpetapptester", "Scarpet App Tester");
         CarpetServer.manageExtension(this);
     }
 
@@ -43,21 +38,18 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     
     @Override
     public void onServerLoadedWorlds(MinecraftServer server) {
-        TickSpeed.is_paused = true; // TODO Make this forwards-compatible
+        TickSpeed.setFrozenState(true, true); // TODO Make this backwards-compatible
         writter = new LogWritter();
-        exceptionStorage = new ExceptionStorage();
-        asyncThread = new Thread(AppTesterThread.INSTANCE);
+        asyncThread = new Thread(AppTester.INSTANCE);
         asyncThread.setName("Scarpet App Tester Thread");
         asyncThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
-				if (e instanceof CrashException)
-					rethrowMe = (CrashException)e;
-				try{
-					AppTesterThread.interrupted(e);
-				}catch (CrashException e2) {
-					rethrowMe = e2;
+				if (!(e instanceof CrashException)) {
+					AppTester.LOGGER.fatal("Crashing with an unhandled exception", e);
+					e = AppTester.crashThread(e);
 				}
+				Util_threadCrasherMixin.invokeMethod_18347(t, e);
 			}
 		});
         asyncThread.start();
@@ -65,8 +57,6 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     
     @Override
     public void onTick(MinecraftServer server) {
-    	if (rethrowMe != null)
-    		throw rethrowMe;
     	if (CarpetServer.scriptServer.events.scheduledCalls.isEmpty()) {
 			ThreadingUtils.getSchedulesLatch().countDown();
 		}
@@ -79,7 +69,7 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 
     @Override
     public void onServerClosed(MinecraftServer server) {
-    	writter.close(getExceptionStorage());
+    	writter.close();
     }
     @Override public String version() { return "scarpet-app-tester"; }
     
@@ -88,12 +78,6 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     	ScarpetAPIFunctions.apply(expression.getExpr());
     }
 
-	/**
-	 * @return the exceptionStorage
-	 */
-	public static ExceptionStorage getExceptionStorage() {
-		return exceptionStorage;
-	}
 	
 	/**
 	 * @return the taskQueue

@@ -12,7 +12,7 @@ public interface App {
 	 * @return The current test
 	 * @throws UnsupportedOperationException if there are no tests running
 	 */
-	public Test getCurrentTest() throws UnsupportedOperationException;
+	public Test getCurrentTest();
 	
 	/**
 	 * @return The current testing status of the app

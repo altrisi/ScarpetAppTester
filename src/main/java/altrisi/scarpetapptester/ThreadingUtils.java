@@ -10,7 +10,7 @@ public class ThreadingUtils {
 		try {
 			schedulesLatch = new CountDownLatch(1);
 			schedulesLatch.await();
-		} catch (InterruptedException e) { AppTesterThread.interrupted(e); }
+		} catch (InterruptedException e) { throw AppTester.crashThread(e); }
 	}
 
 	/**
@@ -21,9 +21,10 @@ public class ThreadingUtils {
 	public static void waitForStep(Runnable step) {
 		try {
 			ScarpetAppTester.getTaskQueue().put(step);
-			stepLatch = new CountDownLatch(1);
+			stepLatch = new CountDownLatch(1);  // We need the latch because taskQueue.poll() unlocks the thread before it actually ran the code.
+												// Please suggest a better way
 			stepLatch.await();
-		} catch (InterruptedException e) { AppTesterThread.interrupted(e); }
+		} catch (InterruptedException e) { throw AppTester.crashThread(e); }
 	}
 	
 	public static CountDownLatch getStepLatch() {

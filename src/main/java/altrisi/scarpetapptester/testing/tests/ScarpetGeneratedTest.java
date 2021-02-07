@@ -1,6 +1,6 @@
 package altrisi.scarpetapptester.testing.tests;
 
-import altrisi.scarpetapptester.AppTesterThread;
+import altrisi.scarpetapptester.AppTester;
 import altrisi.scarpetapptester.testing.subjects.TestSubject;
 import carpet.script.CarpetEventServer.ScheduledCall;
 
@@ -9,7 +9,7 @@ public class ScarpetGeneratedTest extends AbstractTest {
 	private TestSubject testSubject;
 	
 	public ScarpetGeneratedTest(String name, TestSubject test, ScheduledCall prepare, ScheduledCall pre, ScheduledCall post, ScheduledCall check) {
-		super(AppTesterThread.INSTANCE.getCurrentApp(), name); // We can't (I don't want to, would need new Value) to allow specifying apps
+		super(AppTester.INSTANCE.getCurrentApp(), name); // We can't (I don't want to, would need new Value) to allow specifying app
 		this.prepare = prepare;
 		this.pre = pre;
 		this.post = post;
@@ -24,12 +24,12 @@ public class ScarpetGeneratedTest extends AbstractTest {
 	
 	@Override
 	public void preTesting() {
-		prepare.execute();;
+		prepare.execute();
 	}
 	
 	@Override
 	public void rightBeforeTestingStarts() {
-		pre.execute();;
+		pre.execute();
 	}
 	
 	@Override

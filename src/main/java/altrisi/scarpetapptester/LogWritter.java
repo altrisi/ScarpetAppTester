@@ -6,12 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-import altrisi.scarpetapptester.exceptionhandling.ExceptionStorage;
 import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import net.fabricmc.loader.api.FabricLoader;
-
-import static altrisi.scarpetapptester.ScarpetAppTester.LOGGER;; 
+ 
 
 /**
  * Note: This is very much unfinished.
@@ -19,6 +18,7 @@ import static altrisi.scarpetapptester.ScarpetAppTester.LOGGER;;
  * @author altrisi
  *
  */
+@Deprecated
 public class LogWritter {
 	private BufferedWriter logWritter;
     LogWritter() {
@@ -29,9 +29,9 @@ public class LogWritter {
     		Files.createDirectories(logPath.getParent());
 			Files.createFile(logPath);
 			logWritter = Files.newBufferedWriter(logPath);
-			LOGGER.info("Starting testing session at "+now);
+			AppTester.LOGGER.info("Starting testing session at "+now);
 		} catch (IOException e) {
-			LOGGER.fatal("Couldn't initialize log file, exiting...", e);
+			AppTester.LOGGER.fatal("Couldn't initialize log file, exiting...", e);
 			System.exit(-1);
 		}
     }
@@ -43,7 +43,8 @@ public class LogWritter {
 			e1.printStackTrace();
 		}
     }
-    public void close(ExceptionStorage storage) {
+    public void close() {
+    	List<ScarpetException> storage = AppTester.INSTANCE.getExceptionStorage();
     	try {
     		for (ScarpetException e: storage) {
     			writeException(e);

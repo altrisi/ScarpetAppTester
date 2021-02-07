@@ -4,9 +4,8 @@
   "package": "altrisi.scarpetapptester.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ExpressionExceptionMixin",
-    "InternalExpressionExceptionMixin",
-    "CarpetExpressionExceptionMixin"
+    "Util_threadCrasherMixin",
+    "CarpetScriptHost_errorsnooperMixin",
   ],
   "injectors": {
     "defaultRequire": 1

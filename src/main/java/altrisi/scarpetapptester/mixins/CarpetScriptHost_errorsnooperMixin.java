@@ -33,8 +33,8 @@ public abstract class CarpetScriptHost_errorsnooperMixin extends ScriptHost {
 		setOurSnooper(errorSnooper);
 	}
 	
-	@Override
 	@Overwrite(remap = false)
+	@Override
 	public void resetErrorSnooper() {
 		responsibleSource = null;
 		setOurSnooper(null);

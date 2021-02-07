@@ -28,7 +28,7 @@ public abstract class CarpetScriptHost_errorsnooperMixin extends ScriptHost {
 
 	@Shadow(remap = false) ServerCommandSource responsibleSource;
 	
-	@Inject(method = "setChatErrorSnooper", at = @At("TAIL"))
+	@Inject(method = "setChatErrorSnooper", at = @At("TAIL"), remap = false)
 	private void injectOurSnooper(ServerCommandSource source, CallbackInfo ci) {
 		setOurSnooper(errorSnooper);
 	}

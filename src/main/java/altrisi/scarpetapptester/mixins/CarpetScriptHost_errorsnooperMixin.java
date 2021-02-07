@@ -23,7 +23,7 @@ import net.minecraft.server.command.ServerCommandSource;
 public abstract class CarpetScriptHost_errorsnooperMixin extends ScriptHost {
 	protected CarpetScriptHost_errorsnooperMixin(Module code, boolean perUser, ScriptHost parent) {
 		super(null, false, null);
-		throw new IllegalAccessError("Untransformed Mixin!");
+		throw new IllegalAccessError("Badly transformed Mixin!");
 	}
 
 	@Shadow(remap = false) ServerCommandSource responsibleSource;
@@ -33,10 +33,8 @@ public abstract class CarpetScriptHost_errorsnooperMixin extends ScriptHost {
 		setOurSnooper(errorSnooper);
 	}
 	
-	@Overwrite(remap = false)
-	@Override
-	public void resetErrorSnooper() {
-		responsibleSource = null;
+	@Inject(method = "resetErrorSnooper", at = @At("TAIL"), remap = false)
+	public void resetOurErrorSnooper(CallbackInfo ci) {
 		setOurSnooper(null);
 	}
 	

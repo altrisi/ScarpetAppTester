@@ -26,13 +26,14 @@ public abstract class CarpetScriptHost_errorsnooperMixin extends ScriptHost {
 		throw new IllegalAccessError("Untransformed Mixin!");
 	}
 
-	@Shadow ServerCommandSource responsibleSource;
+	@Shadow(remap = false) ServerCommandSource responsibleSource;
 	
 	@Inject(method = "setChatErrorSnooper", at = @At("TAIL"))
 	private void injectOurSnooper(ServerCommandSource source, CallbackInfo ci) {
 		setOurSnooper(errorSnooper);
 	}
 	
+	@Override
 	@Overwrite(remap = false)
 	public void resetErrorSnooper() {
 		responsibleSource = null;

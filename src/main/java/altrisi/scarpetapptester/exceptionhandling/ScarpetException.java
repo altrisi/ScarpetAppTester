@@ -1,49 +1,45 @@
 package altrisi.scarpetapptester.exceptionhandling;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
+import altrisi.scarpetapptester.AppTester;
 import carpet.script.Context;
 import carpet.script.Expression;
 import carpet.script.Tokenizer;
+import carpet.script.exception.ExpressionException;
 import carpet.script.value.FunctionValue;
 
 public class ScarpetException {
-    private Context context;
+    private final Context context;
     private final Expression expression;
     private List<FunctionValue> stack;
 	private final Tokenizer.Token token;
 	private final String message;
-	private boolean dataComplete = false;
+	private final ExpressionException actualException;
+	private boolean unhandled = false; 
 	//private final String chatMessage;
 	
-	public ScarpetException(Expression expression, Tokenizer.Token token, String message) {
+	public ScarpetException(Expression expression, String message, ExpressionException actualException) {
+		this.context = actualException.context;
 		this.expression = expression;
-		this.token = token;
+		this.token = actualException.token;
 		this.message = message;
+		this.stack = actualException.stack;
+		this.actualException = actualException;
 	}
 	
 	/**
-	 * Populate a yet-unfinished exception with its context and stack
-	 * @param ctx The {@link Context} of where the exception occurred
-	 * @param stack The exception's stack. Should be the same object as the exception's
-	 *              to allow populating it lazily  
-	 * @throws UnsupportedOperationException if the exception is already populated
+	 * Returns whether this exception has gotten out of the stack
 	 */
-	public void populate(Context ctx, List<FunctionValue> stack) {
-		if (dataComplete) throw new UnsupportedOperationException("Exception already populated!");
-		this.context = Objects.requireNonNull(ctx);
-		this.stack = Objects.requireNonNull(stack);
-		dataComplete = true;
+	public void setUnhandled() {
+		if (unhandled) AppTester.LOGGER.warn("An exception was marked as unhandled twice, please report!");
+		unhandled = true;
 	}
 	
-	/**
-	 * @return Whether this exception's context and stack object have been populated
-	 */
-	public boolean isDataComplete() {
-		return dataComplete;
+	public boolean wasUnhandled() {
+		return unhandled;
 	}
 	
 	public String getMessage() {
@@ -51,7 +47,6 @@ public class ScarpetException {
 	}
 	
 	public Context getContext() {
-		if (!dataComplete) throw new UnsupportedOperationException("Exception has not been populated yet!");
 		return context;
 	}
 	
@@ -65,7 +60,6 @@ public class ScarpetException {
 	}
 	
 	public List<FunctionValue> getStack() {
-		if (!dataComplete) throw new UnsupportedOperationException("Exception has not been populated yet!");
 		return stack;
 	}
 }

@@ -19,6 +19,9 @@ public interface App {
 	 */
 	public AppStatus getCurrentStatus();
 	
-	void setStatus(AppStatus status);
+	/**
+	 * @param status The {@link AppStatus} to set for this app
+	 */
+	public void setStatus(AppStatus status);
 	
 }

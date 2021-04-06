@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "Util_threadCrasherMixin",
-    "CarpetScriptHost_errorsnooperMixin",
+    "ExpressionException_capturerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

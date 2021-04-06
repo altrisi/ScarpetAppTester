@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
 import carpet.script.Expression;
-import carpet.script.Tokenizer;
+import carpet.script.exception.ExpressionException;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -64,10 +64,11 @@ public enum AppTester implements Runnable { INSTANCE;
 	 * Registers an exception into the current storage and assigns information to it
 	 * @return That exception, not sure why
 	 */
-	public ScarpetException registerException(Expression expr, @Nullable Tokenizer.Token token, String msg) {
-		exceptionStorage.add(new ScarpetException(expr, token, msg));
-		System.out.print("HELLO");
-		return null; //new ScarpetException(expr, token, msg);
+	public ScarpetException registerException(Expression expr, String msg, ExpressionException e) {
+		ScarpetException exc = new ScarpetException(expr, msg, e);
+		exceptionStorage.add(exc);
+		LOGGER.info("HELLO I FOUND A BUG");
+		return exc;
 	}
 	
 }

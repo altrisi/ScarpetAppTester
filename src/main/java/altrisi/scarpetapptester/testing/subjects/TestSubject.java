@@ -1,5 +1,6 @@
 package altrisi.scarpetapptester.testing.subjects;
 
+@FunctionalInterface
 public interface TestSubject {
 
 	/**

@@ -13,7 +13,7 @@ public class ScarpetGeneratedTest extends AbstractTest {
 	private TestSubject testSubject;
 	
 	public ScarpetGeneratedTest(String name, TestSubject test, ScheduledCall prepare, ScheduledCall pre, ScheduledCall post, ScheduledCall check) {
-		super(AppTester.INSTANCE.getCurrentApp(), name); // We can't (I don't want to, would need new Value) to allow specifying app
+		super(AppTester.INSTANCE.currentApp(), name); // We can't (I don't want to, would need new Value) to allow specifying app
 		this.prepare = prepare;
 		this.pre = pre;
 		this.post = post;

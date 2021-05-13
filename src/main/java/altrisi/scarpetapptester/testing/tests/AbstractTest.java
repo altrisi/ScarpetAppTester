@@ -1,11 +1,16 @@
 package altrisi.scarpetapptester.testing.tests;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
 
 abstract class AbstractTest implements Test {
 	protected final App app;
 	private final String name;
 	protected TestStage stage = TestStage.WAITING;
+	protected List<ScarpetException> exceptions = new ArrayList<>();
 	
 	public AbstractTest(App app, String name) {
 		this.app = app;
@@ -32,6 +37,11 @@ abstract class AbstractTest implements Test {
 	@Override
 	public TestStage getTestStage() {
 		return stage;
+	}
+	
+	@Override
+	public void attachException(ScarpetException exception) {
+		exceptions.add(exception);
 	}
 
 }

@@ -1,11 +1,19 @@
 package altrisi.scarpetapptester.testing.tests;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+
+import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 
 public interface TestResults {
 
 	Map<String, String> getResultsMap();
+	
+	boolean successful();
+	
+	List<ScarpetException> exceptions();
 	
 	default String toPrettyString() {
 		StringBuilder string = new StringBuilder();

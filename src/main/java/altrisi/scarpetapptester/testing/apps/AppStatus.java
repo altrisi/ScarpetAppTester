@@ -44,7 +44,7 @@ public enum AppStatus {
 	/**
 	 * App has been already unloaded
 	 */
-	ALREADY_UNLOADED,
+	UNLOADED,
 	/**
 	 * App testing has finished, and other apps can be tested now
 	 */

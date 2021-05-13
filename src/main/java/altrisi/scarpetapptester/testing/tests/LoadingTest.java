@@ -1,9 +1,12 @@
 package altrisi.scarpetapptester.testing.tests;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import altrisi.scarpetapptester.AppTester;
 import altrisi.scarpetapptester.ScarpetAppTester;
+import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
 import carpet.CarpetServer;
 import carpet.script.CarpetScriptHost;
@@ -12,6 +15,7 @@ public class LoadingTest extends AbstractTest {
 	private boolean success;
 	public CarpetScriptHost resultHost;
 	private long elapsedTime;
+	private ScarpetException exception;
 
 	public LoadingTest(App app) {
 		super(app, "App Loading");
@@ -46,14 +50,21 @@ public class LoadingTest extends AbstractTest {
 	public void prepareTest() {}
 
 	@Override
-	public TestResults getResults() {
-		return new LoadResult(success, elapsedTime);
+	public void attachException(ScarpetException exception) {
+		this.exception = exception;
 	}
 	
-	public record LoadResult(boolean success, long elapsedTime) implements TestResults {
+	@Override
+	public TestResults getResults() {
+		// Cleanup
+		resultHost = null;
+		return new LoadResult(success, elapsedTime, exception == null ? Collections.singletonList(exception) : Collections.emptyList());
+	}
+	
+	public record LoadResult(boolean successful, long elapsedTime, List<ScarpetException> exceptions) implements TestResults {
 		@Override
 		public Map<String, String> getResultsMap() {
-			return Map.of("App load", success ? "Correct" : "Failed", "Elapsed time", elapsedTime + "ms");
+			return Map.of("App load", successful ? "Correct" : "Failed", "Elapsed time", elapsedTime + "ms");
 		}
 		
 	}

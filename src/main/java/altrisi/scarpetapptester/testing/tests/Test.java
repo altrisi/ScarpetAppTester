@@ -3,6 +3,7 @@ package altrisi.scarpetapptester.testing.tests;
 import static altrisi.scarpetapptester.testing.tests.TestStage.*;
 
 import altrisi.scarpetapptester.ThreadingUtils;
+import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.scarpetapi.ScarpetEvents;
 import altrisi.scarpetapptester.testing.apps.App;
 
@@ -70,7 +71,7 @@ public interface Test {
 	 * Runs right before testing starts, without waiting
 	 * for schedules.
 	 * It is executed in main thread.
-	 * By default, contains the Scarpet event
+	 * By default, dispatches the Scarpet event
 	 */
 	default void rightBeforeTestingStarts() {
 		ScarpetEvents.RIGHT_BEFORE_TEST_STARTED.dispatch(this);
@@ -80,7 +81,7 @@ public interface Test {
 	 * Runs right after testing starts, without waiting
 	 * for schedules.
 	 * It is executed in main thread.
-	 * By default, contains the Scarpet event
+	 * By default, dispatches the Scarpet event
 	 */
 	default void rightAfterTestingStarts() {
 		ScarpetEvents.RIGHT_AFTER_TEST_STARTED.dispatch(this);
@@ -89,7 +90,7 @@ public interface Test {
 	/**
 	 * Runs after the test ends, waiting for schedules to
 	 * finish before returning execution<br>
-	 * By default, calls Scarpet test handlers<br>
+	 * By default, dispatches Scarpet test handlers<br>
 	 * Gets queued into main thread, on next tick	
 	 */
 	default void afterTesting() {
@@ -146,5 +147,11 @@ public interface Test {
 	public TestStage getTestStage();
 	
 	public TestResults getResults();
+	
+	/**
+	 * Attaches an exception that occurred during the test
+	 * @param exception The exception
+	 */
+	public void attachException(ScarpetException exception);
 	
 }

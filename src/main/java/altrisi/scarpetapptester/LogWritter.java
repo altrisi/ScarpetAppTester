@@ -19,17 +19,19 @@ import net.fabricmc.loader.api.FabricLoader;
  *
  */
 @Deprecated
-public class LogWritter {
+class LogWritter {
 	private BufferedWriter logWritter;
     LogWritter() {
     	String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
     	Path logPath = FabricLoader.getInstance().getGameDir()
-    					.resolve("results").resolve("result-"+now+".txt").toAbsolutePath();
+    					.resolve("results").resolve("result-" + now + ".txt").toAbsolutePath();
     	try {
     		Files.createDirectories(logPath.getParent());
 			Files.createFile(logPath);
 			logWritter = Files.newBufferedWriter(logPath);
-			AppTester.LOGGER.info("Starting testing session at "+now);
+			AppTester.LOGGER.info("Starting testing session at " + now);
+			logWritter.write("Starting testing session at " + now);
+			logWritter.newLine();
 		} catch (IOException e) {
 			AppTester.LOGGER.fatal("Couldn't initialize log file, exiting...", e);
 			System.exit(-1);
@@ -38,7 +40,10 @@ public class LogWritter {
     
     public void writeException(ScarpetException e) {
     	try {
-			logWritter.write(e.message()+'\n');
+    		logWritter.write(e.time());
+    		logWritter.write(" -> ");
+			logWritter.write(e.message());
+			logWritter.newLine();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -53,5 +58,5 @@ public class LogWritter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    }
+	}
 }

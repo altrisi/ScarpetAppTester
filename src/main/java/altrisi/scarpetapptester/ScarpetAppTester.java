@@ -2,8 +2,6 @@ package altrisi.scarpetapptester;
 
 import java.util.concurrent.SynchronousQueue;
 
-import org.jetbrains.annotations.NotNull;
-
 import altrisi.scarpetapptester.mixins.Util_threadCrasherMixin;
 import altrisi.scarpetapptester.scarpetapi.ScarpetAPIFunctions;
 import carpet.CarpetExtension;
@@ -18,8 +16,7 @@ import net.minecraft.util.crash.CrashException;
 
 public class ScarpetAppTester implements CarpetExtension, ModInitializer
 {
-	@NotNull
-    private static Thread asyncThread;
+	private static Thread asyncThread;
     public static LogWritter writter;
     private static SynchronousQueue<Runnable> taskQueue = new SynchronousQueue<Runnable>();
     public static ServerCommandSource commandSource; 

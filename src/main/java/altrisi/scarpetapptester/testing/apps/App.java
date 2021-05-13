@@ -21,12 +21,6 @@ public interface App {
 	public AppStatus currentStatus();
 	
 	/**
-	 * Setting it to {@link AppStatus#CRITICAL_FAILURE} will stop testing
-	 * @param status The {@link AppStatus} to set for this app.
-	 */
-	//public void setStatus(AppStatus status);
-	
-	/**
 	 * Sets the {@link AppStatus} to {@link AppStatus#CRITICAL_FAILURE} and cancels
 	 * further testing of the app
 	 */

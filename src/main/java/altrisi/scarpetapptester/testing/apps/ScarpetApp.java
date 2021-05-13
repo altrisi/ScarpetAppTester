@@ -41,10 +41,11 @@ public class ScarpetApp implements App {
 	
 	@Override
 	public void load() {
+		if (status != QUEUED)
 		status = LOADING;
-		LoadingTest test = new LoadingTest(this);
-		test.run();
-		host = test.resultHost;
+		currentTest = new LoadingTest(this);
+		currentTest.run();
+		host = ((LoadingTest)currentTest).resultHost;
 		status = JUST_LOADED;
 	}
 	
@@ -55,7 +56,7 @@ public class ScarpetApp implements App {
 			if (status == CRITICAL_FAILURE)
 				break;
 			currentTest = test;
-			test.run();
+			currentTest.run();
 		}
 		currentTest = null;
 		if (status != CRITICAL_FAILURE) {
@@ -65,10 +66,12 @@ public class ScarpetApp implements App {
 	
 	@Override
 	public void unload() {
+		status = UNLOADING;
 		ThreadingUtils.runInMainThreadAndWait(() -> {
 			CarpetServer.scriptServer.removeScriptHost(ScarpetAppTester.commandSource, name, false, false);
 		});
-		AppTester.LOGGER.info("Unloaded app");
+		AppTester.LOGGER.info("Unloaded app " + name);
+		status = UNLOADED;
 	}
 	
 	@Override

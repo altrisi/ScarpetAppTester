@@ -36,11 +36,11 @@ abstract class ExpressionException_capturerMixin {
 			remap = false
 	) // Catchable
 	private void startExc(Context c, Expression e, Tokenizer.Token t, Supplier<String> message, List<FunctionValue> stack, CallbackInfo ci) {
-		this.storedException = AppTester.INSTANCE.registerException(e, message.get(), (ExpressionException)(Object)this); //TODO Change way message is gotten?
+		this.storedException = AppTester.INSTANCE.registerException(e, message.get(), (ExpressionException)(Object) this); //TODO Change way message is gotten?
 	}
 	
 	@Inject(method = "getMessage", at = @At("RETURN"), remap = false)
-	private void setUnhandled(CallbackInfoReturnable<String> ci) {
+	private void setUnhandled(CallbackInfoReturnable<String> cir) {
 		storedException.setUnhandled();
 	}
 }

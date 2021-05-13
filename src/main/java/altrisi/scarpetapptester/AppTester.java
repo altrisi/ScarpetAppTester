@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
 import altrisi.scarpetapptester.testing.apps.ScarpetApp;
+import carpet.CarpetServer;
 import carpet.script.Expression;
 import carpet.script.exception.ExpressionException;
 import net.minecraft.util.crash.CrashException;
@@ -18,6 +19,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
 public enum AppTester implements Runnable { INSTANCE;
+	@Deprecated
     private final List<ScarpetException> exceptionStorage = new ArrayList<ScarpetException>();
 	private App currentApp = null;
 	public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
@@ -26,9 +28,11 @@ public enum AppTester implements Runnable { INSTANCE;
 
 	@Override
 	public void run() {
+		LOGGER.info("App Tester thread started!");
 		//prepareConfigs etc
 		try { serverLoadedWorlds.await(); }
 		catch (InterruptedException e) { throw crashThread(e); }
+		LOGGER.info("Received serverLoadedWorlds confirmation, starting!");
 		currentApp = new ScarpetApp("testapp");
 		currentApp.load();
 		currentApp.runTests();
@@ -39,13 +43,17 @@ public enum AppTester implements Runnable { INSTANCE;
 		} catch (InterruptedException e) {
 			throw crashThread(e);
 		}
+		ThreadingUtils.runInMainThreadAndWait(() -> {
+			CarpetServer.minecraft_server.stop(false);
+			ThreadingUtils.getStepLatch().countDown();
+		});
 	}
 
-	public static CrashException crashThread(Throwable e) {
+	static CrashException crashThread(Throwable e) {
 		LOGGER.fatal(e.getMessage() != null ? e.getMessage().toUpperCase() : "THREAD CRASHED", e);
 		CrashReport crash = CrashReport.create(e, "Something crashed the Scarpet App Tester thread");
 		CrashReportSection ourSection = crash.addElement("Scarpet App Tester");
-		App app = INSTANCE.getCurrentApp();
+		App app = INSTANCE.currentApp();
 		try {
 			ourSection.add("Current app being tested: ", app.name());
 			ourSection.add("App status: ", app.currentStatus().name());
@@ -58,7 +66,7 @@ public enum AppTester implements Runnable { INSTANCE;
 	/**
 	 * @return The current instance of {@link App} being tested
 	 */
-	public App getCurrentApp() {
+	public App currentApp() {
 		return currentApp;
 	}
 	
@@ -77,6 +85,7 @@ public enum AppTester implements Runnable { INSTANCE;
 		var exception = new ScarpetException(expr, msg, e);
 		exceptionStorage.add(exception);
 		LOGGER.info("HELLO I FOUND A BUG");
+		currentApp().currentTest().attachException(exception);
 		return exception;
 	}
 	

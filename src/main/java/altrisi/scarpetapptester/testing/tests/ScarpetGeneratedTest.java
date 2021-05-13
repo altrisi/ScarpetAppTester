@@ -4,6 +4,10 @@ import altrisi.scarpetapptester.AppTester;
 import altrisi.scarpetapptester.testing.subjects.TestSubject;
 import carpet.script.CarpetEventServer.ScheduledCall;
 
+/**
+ * NOT PUBLIC API.
+ * INTERNAL USE ONLY
+ */
 public class ScarpetGeneratedTest extends AbstractTest {
 	private ScheduledCall prepare, pre, post, check;
 	private TestSubject testSubject;
@@ -47,5 +51,11 @@ public class ScarpetGeneratedTest extends AbstractTest {
 	@Override public void testFinishedChecks() { }
 	@Override public void finishTest() { }
 	@Override public void prepareTest() { }
+
+	@Override
+	public TestResults getResults() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

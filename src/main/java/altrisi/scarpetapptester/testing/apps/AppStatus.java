@@ -13,11 +13,6 @@ public enum AppStatus {
 	 */
 	QUEUED,
 	/**
-	 * The app is not yet loaded, but it's in the first
-	 * position of the queue
-	 */
-	NOT_YET_LOADED,
-	/**
 	 * The app is being loaded
 	 */
 	LOADING,
@@ -53,5 +48,9 @@ public enum AppStatus {
 	/**
 	 * App testing has finished, and other apps can be tested now
 	 */
-	FINISHED;
+	FINISHED,
+	/**
+	 * App testing has failed critically
+	 */
+	CRITICAL_FAILURE;
 }

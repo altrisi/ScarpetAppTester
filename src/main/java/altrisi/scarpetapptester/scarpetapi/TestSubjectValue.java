@@ -2,11 +2,10 @@ package altrisi.scarpetapptester.scarpetapi;
 
 import altrisi.scarpetapptester.testing.subjects.TestSubject;
 import carpet.script.value.FrameworkValue;
-import carpet.script.value.Value;
 
 public class TestSubjectValue extends FrameworkValue {
 
-	private final TestSubject subject;
+	public final TestSubject subject;
 	
 	/**
 	 * Creates a {@link TestSubjectValue} out of a {@link TestSubject}.<br>
@@ -20,11 +19,13 @@ public class TestSubjectValue extends FrameworkValue {
 	
 	//TODO Create the test subject
 	
-	/**
-	 * Gets the test subject associated to this {@link Value}
-	 * @return The {@link TestSubject}
-	 */
-	public TestSubject getSubject() {
-		return subject;
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof TestSubjectValue ts && ts.subject == this.subject;
+	}
+	
+	@Override
+	public int hashCode() {
+		return subject.hashCode();
 	}
 }

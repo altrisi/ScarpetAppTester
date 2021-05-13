@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
+import altrisi.scarpetapptester.testing.apps.ScarpetApp;
 import carpet.script.Expression;
 import carpet.script.exception.ExpressionException;
 import net.minecraft.util.crash.CrashException;
@@ -20,10 +20,15 @@ public enum AppTester implements Runnable { INSTANCE;
     private final List<ScarpetException> exceptionStorage = new ArrayList<ScarpetException>();
 	private App currentApp = null;
 	public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
+	private final List<App> appQueue = new ArrayList<>();
 
 	@Override
 	public void run() {
 		//prepareConfigs etc
+		currentApp = new ScarpetApp("testapp");
+		currentApp.load();
+		currentApp.runTests();
+		currentApp.unload();
 		try {
 			Thread.sleep(6000);
 			LOGGER.info("Yeah, that did nothing...");
@@ -38,7 +43,7 @@ public enum AppTester implements Runnable { INSTANCE;
 		CrashReportSection ourSection = crash.addElement("Scarpet App Tester");
 		App app = INSTANCE.getCurrentApp();
 		try {
-			ourSection.add("Current app being tested: ", app.getName());
+			ourSection.add("Current app being tested: ", app.name());
 			ourSection.add("App status: ", app.getCurrentStatus().name());
 			ourSection.add("Current test: ", app.getCurrentTest().getName());
 			ourSection.add("Current test stage", app.getCurrentTest().getTestStage().name());
@@ -65,10 +70,10 @@ public enum AppTester implements Runnable { INSTANCE;
 	 * @return That exception, not sure why
 	 */
 	public ScarpetException registerException(Expression expr, String msg, ExpressionException e) {
-		ScarpetException exc = new ScarpetException(expr, msg, e);
-		exceptionStorage.add(exc);
+		var exception = new ScarpetException(expr, msg, e);
+		exceptionStorage.add(exception);
 		LOGGER.info("HELLO I FOUND A BUG");
-		return exc;
+		return exception;
 	}
 	
 }

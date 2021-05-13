@@ -7,7 +7,7 @@ import carpet.script.CarpetEventServer.ScheduledCall;
 import carpet.script.value.FrameworkValue;
 
 public class TestValue extends FrameworkValue {
-	private final Test test;
+	public final Test test;
 	
 	/**
 	 * Creates a {@link TestValue} out of a {@link Test}
@@ -33,16 +33,15 @@ public class TestValue extends FrameworkValue {
 	
 	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof TestValue))
-			return false;
-		return this.test == ((TestValue)o).test;
-	}
-	
-	public Test getTest() {
-		return test;
+		return o instanceof TestValue t && this.test == t.test;
 	}
 	
 	@Override
+	public int hashCode() {
+		return test.hashCode();
+	}
+	
+	@Override //TODO Reconsider
 	public String getString() {
 		return test.getName();
 	}

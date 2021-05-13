@@ -38,13 +38,13 @@ public interface Test {
 		prepareTest();
 		
 		setStage(SYNC_PREPARING);
-		ThreadingUtils.waitForStep(() -> {
+		ThreadingUtils.runInMainThreadAndWait(() -> {
 			preTesting();
 		});
 		ThreadingUtils.waitForSchedules();
 		
 		setStage(RUNNING);
-		ThreadingUtils.waitForStep(() -> {
+		ThreadingUtils.runInMainThreadAndWait(() -> {
 			rightBeforeTestingStarts();
 			runTests();
 			rightAfterTestingStarts();
@@ -55,7 +55,7 @@ public interface Test {
 		testFinishedChecks();
 		
 		setStage(SYNC_CHECKING);
-		ThreadingUtils.waitForStep(() -> {
+		ThreadingUtils.runInMainThreadAndWait(() -> {
 			afterTesting();
 		});
 		ThreadingUtils.waitForSchedules();
@@ -146,4 +146,5 @@ public interface Test {
 	public TestStage getTestStage();
 	
 	public TestResults getResults();
+	
 }

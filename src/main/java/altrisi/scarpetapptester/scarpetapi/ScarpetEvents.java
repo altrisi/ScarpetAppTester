@@ -12,6 +12,10 @@ import net.minecraft.world.World;
 
 import static carpet.script.CarpetEventServer.Event;
 
+/**
+ * NOT PUBLIC API
+ * INTERNAL USE ONLY
+ */
 public abstract class ScarpetEvents extends Event {
 	private static final Supplier<ServerCommandSource> SOURCE_SUPPLIER = () -> CarpetServer.minecraft_server.getCommandSource().
             withWorld(CarpetServer.minecraft_server.getWorld(World.OVERWORLD));
@@ -23,7 +27,7 @@ public abstract class ScarpetEvents extends Event {
 	public static final ScarpetEvents PRE_TEST_STARTED = new ScarpetEvents("pre_test_started", 2, false) {
 		public void dispatch(Test test) {
 			this.handler.call(() -> {
-				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getName()));
+				return Arrays.asList(new StringValue(test.getApp().name()), new StringValue(test.getName()));
 			}, SOURCE_SUPPLIER);
 		}
 	};
@@ -31,7 +35,7 @@ public abstract class ScarpetEvents extends Event {
 	public static final ScarpetEvents RIGHT_BEFORE_TEST_STARTED = new ScarpetEvents("right_before_test_started", 2, false) {
 		public void dispatch(Test test) {
 			this.handler.call(() -> {
-				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getName()));
+				return Arrays.asList(new StringValue(test.getApp().name()), new StringValue(test.getName()));
 			}, SOURCE_SUPPLIER);
 		}
 	};
@@ -39,7 +43,7 @@ public abstract class ScarpetEvents extends Event {
 	public static final ScarpetEvents RIGHT_AFTER_TEST_STARTED = new ScarpetEvents("right_after_test_started", 2, false) {
 		public void dispatch(Test test) {
 			this.handler.call(() -> {
-				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getName()));
+				return Arrays.asList(new StringValue(test.getApp().name()), new StringValue(test.getName()));
 			}, SOURCE_SUPPLIER);
 		}
 	};
@@ -47,7 +51,7 @@ public abstract class ScarpetEvents extends Event {
 	public static final ScarpetEvents TEST_FINISHED = new ScarpetEvents("test_finished", 3, false) {
 		public void dispatch(Test test) {
 			this.handler.call(() -> {
-				return Arrays.asList(new StringValue(test.getApp().getName()), new StringValue(test.getName()), new NumericValue(test.successfulSoFar()));
+				return Arrays.asList(new StringValue(test.getApp().name()), new StringValue(test.getName()), new NumericValue(test.successfulSoFar()));
 			}, SOURCE_SUPPLIER);
 		}
 	};

@@ -8,11 +8,12 @@ import altrisi.scarpetapptester.mixins.Util_threadCrasherMixin;
 import altrisi.scarpetapptester.scarpetapi.ScarpetAPIFunctions;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
-import carpet.helpers.TickSpeed;
+import carpet.CarpetSettings;
 import carpet.script.CarpetExpression;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.crash.CrashException;
 
 public class ScarpetAppTester implements CarpetExtension, ModInitializer
@@ -21,11 +22,13 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     private static Thread asyncThread;
     public static LogWritter writter;
     private static SynchronousQueue<Runnable> taskQueue = new SynchronousQueue<Runnable>();
+    public static ServerCommandSource commandSource; 
 
     @Override
     public void onInitialize()
     {
         CarpetServer.manageExtension(this);
+        CarpetSettings.scriptsAutoload = false;
     }
 
     @Override
@@ -38,19 +41,17 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     
     @Override
     public void onServerLoadedWorlds(MinecraftServer server) {
-        TickSpeed.setFrozenState(true, true); // TODO Make this backwards-compatible
+    	commandSource = server.getCommandSource();
+        //TickSpeed.setFrozenState(true, true);
         writter = new LogWritter();
         asyncThread = new Thread(AppTester.INSTANCE);
         asyncThread.setName("Scarpet App Tester Thread");
-        asyncThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread t, Throwable e) {
-				if (!(e instanceof CrashException)) {
-					AppTester.LOGGER.fatal("Crashing with an unhandled exception", e);
-					e = AppTester.crashThread(e);
-				}
-				Util_threadCrasherMixin.invokeMethod_18347(t, e);
+        asyncThread.setUncaughtExceptionHandler((thread, exception) -> {
+			if (!(exception instanceof CrashException)) {
+				AppTester.LOGGER.fatal("Crashing with an unhandled exception", exception);
+				exception = AppTester.crashThread(exception);
 			}
+			Util_threadCrasherMixin.invokeMethod_18347(thread, exception);
 		});
         asyncThread.start();
     }

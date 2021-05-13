@@ -38,7 +38,7 @@ public class LogWritter {
     
     public void writeException(ScarpetException e) {
     	try {
-			logWritter.write(e.getMessage()+'\n');
+			logWritter.write(e.message()+'\n');
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

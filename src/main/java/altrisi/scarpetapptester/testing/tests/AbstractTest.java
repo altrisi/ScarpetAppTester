@@ -4,9 +4,8 @@ import altrisi.scarpetapptester.testing.apps.App;
 
 abstract class AbstractTest implements Test {
 	protected final App app;
-	protected final String name;
+	private final String name;
 	protected TestStage stage = TestStage.WAITING;
-	protected TestResults results;
 	
 	public AbstractTest(App app, String name) {
 		this.app = app;
@@ -33,11 +32,6 @@ abstract class AbstractTest implements Test {
 	@Override
 	public TestStage getTestStage() {
 		return stage;
-	}
-
-	@Override
-	public TestResults getResults() {
-		return results;
 	}
 
 }

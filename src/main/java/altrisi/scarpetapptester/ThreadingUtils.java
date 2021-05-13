@@ -18,11 +18,11 @@ public class ThreadingUtils {
 	 * and waits for it to finish
 	 * @param step The {@link Runnable} to execute next tick
 	 */
-	public static void waitForStep(Runnable step) {
+	public static void runInMainThreadAndWait(Runnable step) {
 		try {
 			ScarpetAppTester.getTaskQueue().put(step);
 			stepLatch = new CountDownLatch(1);  // We need the latch because taskQueue.poll() unlocks the thread before it actually ran the code.
-												// Please suggest a better way
+												// Please suggest a better way. Much appreciated
 			stepLatch.await();
 		} catch (InterruptedException e) { throw AppTester.crashThread(e); }
 	}

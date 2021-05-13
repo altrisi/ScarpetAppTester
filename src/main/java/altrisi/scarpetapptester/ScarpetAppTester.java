@@ -29,6 +29,17 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     {
         CarpetServer.manageExtension(this);
         CarpetSettings.scriptsAutoload = false;
+        writter = new LogWritter();
+        asyncThread = new Thread(AppTester.INSTANCE);
+        asyncThread.setName("Scarpet App Tester Thread");
+        asyncThread.setUncaughtExceptionHandler((thread, exception) -> {
+			if (!(exception instanceof CrashException)) {
+				AppTester.LOGGER.fatal("Crashing with an unhandled exception", exception);
+				exception = AppTester.crashThread(exception);
+			}
+			Util_threadCrasherMixin.invokeMethod_18347(thread, exception);
+		});
+        asyncThread.start();
     }
 
     @Override
@@ -43,17 +54,7 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     public void onServerLoadedWorlds(MinecraftServer server) {
     	commandSource = server.getCommandSource();
         //TickSpeed.setFrozenState(true, true);
-        writter = new LogWritter();
-        asyncThread = new Thread(AppTester.INSTANCE);
-        asyncThread.setName("Scarpet App Tester Thread");
-        asyncThread.setUncaughtExceptionHandler((thread, exception) -> {
-			if (!(exception instanceof CrashException)) {
-				AppTester.LOGGER.fatal("Crashing with an unhandled exception", exception);
-				exception = AppTester.crashThread(exception);
-			}
-			Util_threadCrasherMixin.invokeMethod_18347(thread, exception);
-		});
-        asyncThread.start();
+        AppTester.INSTANCE.serverLoadedWorlds.countDown();
     }
     
     @Override

@@ -2,6 +2,11 @@ package altrisi.scarpetapptester;
 
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * Utils for cross-threading with the game's main thread
+ * @author altrisi
+ *
+ */
 public class ThreadingUtils {
 	private static CountDownLatch stepLatch = new CountDownLatch(0);
 	private static CountDownLatch schedulesLatch = new CountDownLatch(0);

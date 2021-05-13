@@ -13,12 +13,12 @@ public interface App {
 	 * @return The current test
 	 * @throws UnsupportedOperationException if there are no tests running
 	 */
-	public Test getCurrentTest();
+	public Test currentTest();
 	
 	/**
 	 * @return The current testing status of the app
 	 */
-	public AppStatus getCurrentStatus();
+	public AppStatus currentStatus();
 	
 	/**
 	 * Setting it to {@link AppStatus#CRITICAL_FAILURE} will stop testing

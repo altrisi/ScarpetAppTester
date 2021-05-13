@@ -3,6 +3,7 @@ package altrisi.scarpetapptester;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,10 +22,13 @@ public enum AppTester implements Runnable { INSTANCE;
 	private App currentApp = null;
 	public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
 	private final List<App> appQueue = new ArrayList<>();
+	public final CountDownLatch serverLoadedWorlds = new CountDownLatch(1);
 
 	@Override
 	public void run() {
 		//prepareConfigs etc
+		try { serverLoadedWorlds.await(); }
+		catch (InterruptedException e) { throw crashThread(e); }
 		currentApp = new ScarpetApp("testapp");
 		currentApp.load();
 		currentApp.runTests();
@@ -39,14 +43,14 @@ public enum AppTester implements Runnable { INSTANCE;
 
 	public static CrashException crashThread(Throwable e) {
 		LOGGER.fatal(e.getMessage() != null ? e.getMessage().toUpperCase() : "THREAD CRASHED", e);
-		CrashReport crash = CrashReport.create(e, "Something interrupted the Scarpet App Tester thread");
+		CrashReport crash = CrashReport.create(e, "Something crashed the Scarpet App Tester thread");
 		CrashReportSection ourSection = crash.addElement("Scarpet App Tester");
 		App app = INSTANCE.getCurrentApp();
 		try {
 			ourSection.add("Current app being tested: ", app.name());
-			ourSection.add("App status: ", app.getCurrentStatus().name());
-			ourSection.add("Current test: ", app.getCurrentTest().getName());
-			ourSection.add("Current test stage", app.getCurrentTest().getTestStage().name());
+			ourSection.add("App status: ", app.currentStatus().name());
+			ourSection.add("Current test: ", app.currentTest().getName());
+			ourSection.add("Current test stage", app.currentTest().getTestStage().name());
 		} catch (Throwable e2) { }
 		return new CrashException(crash); // Kill the thread
 	}

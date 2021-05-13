@@ -30,12 +30,12 @@ public class ScarpetApp implements App {
 	}
 
 	@Override
-	public Test getCurrentTest() {
+	public Test currentTest() {
 		return currentTest;
 	}
 
 	@Override
-	public AppStatus getCurrentStatus() {
+	public AppStatus currentStatus() {
 		return status;
 	}
 	

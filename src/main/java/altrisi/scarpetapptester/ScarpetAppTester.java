@@ -16,7 +16,7 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 {
 	private static Thread asyncThread;
     private static SynchronousQueue<Runnable> taskQueue = new SynchronousQueue<Runnable>();
-    public static ServerCommandSource commandSource; 
+    public static ServerCommandSource commandSource;
 
     @Override
     public void onInitialize()

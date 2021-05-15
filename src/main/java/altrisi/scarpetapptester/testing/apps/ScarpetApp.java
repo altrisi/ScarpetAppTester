@@ -6,6 +6,8 @@ import java.util.List;
 import altrisi.scarpetapptester.AppTester;
 import altrisi.scarpetapptester.ScarpetAppTester;
 import altrisi.scarpetapptester.ThreadingUtils;
+import altrisi.scarpetapptester.config.AppConfig;
+import altrisi.scarpetapptester.scarpetapi.ScarpetEvents;
 import altrisi.scarpetapptester.testing.tests.LoadingTest;
 import altrisi.scarpetapptester.testing.tests.Test;
 import carpet.CarpetServer;
@@ -52,8 +54,17 @@ public class ScarpetApp implements App {
 	}
 	
 	@Override
+	public void prepareTests(AppConfig config) {
+		status = PREPARING_TESTS;
+		//...
+		ScarpetEvents.PREPARING_TESTS.dispatch(this);
+		status = TESTS_READY;
+	}
+	
+	@Override
 	public void runTests() {
 		if (status != TESTS_READY)
+			throw new IllegalStateException();
 		status = RUNNING_TESTS;
 		for (Test test : tests) {
 			if (status == CRITICAL_FAILURE) {

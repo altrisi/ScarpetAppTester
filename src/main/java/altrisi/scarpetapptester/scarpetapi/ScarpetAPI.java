@@ -10,36 +10,37 @@ import carpet.script.Context;
 import carpet.script.annotation.AnnotationParser;
 import carpet.script.annotation.ScarpetFunction;
 import carpet.script.annotation.SimpleTypeConverter;
-import carpet.script.annotation.ValueCaster;
 import carpet.script.exception.InternalExpressionException;
 import carpet.script.value.FunctionValue;
 import carpet.script.value.Value;
 
 public class ScarpetAPI {
 	public static void registerOurThings() {
-		ValueCaster.register(TestSubjectValue.class, "test subject");
     	SimpleTypeConverter.registerType(TestSubjectValue.class, TestSubject.class, TestSubjectValue::getTestSubject, "test subject");
-    	ValueCaster.register(TestValue.class, "test");
     	SimpleTypeConverter.registerType(TestValue.class, Test.class, TestValue::getTest, "test");
     	AnnotationParser.parseFunctionClass(ScarpetAPI.class);
 	}
 	
 	@ScarpetFunction(maxParams = 6)
-	public TestValue create_test(Context context, String name, TestSubject subject, Value... callValues) {
+	public TestValue create_test(Context context, String name, Value subject, Value... callValues) {
 		if (callValues.length != 4) throw new InternalExpressionException("'create_test' requires 4 callbacks");
 		CarpetEventServer.ScheduledCall[] calls = new CarpetEventServer.ScheduledCall[4];
 		for (int i = 0; i < 4; i++) {
 			Value val = callValues[i];
 			FunctionValue function;
-			if (!(val instanceof FunctionValue)) {
+			if (val instanceof FunctionValue) {
+				function = (FunctionValue) val;
+			} else {
+				if (val == null) {
+					function = null;
+					continue;
+				}
 	            String fnName = val.getString();
 	            function = context.host.getAssertFunction(context.host.main, fnName);
-	        } else {
-	        	function = (FunctionValue) val;
 	        }
 			calls[i] = new CarpetEventServer.ScheduledCall((CarpetContext) context, function, Collections.emptyList(), 0);
 		}
-		return TestValue.createNewTest(name, subject, calls[0], calls[1], calls[2], calls[3]);
+		return TestValue.createNewTest(name, null, calls[0], calls[1], calls[2], calls[3]);
 	}
 	
 	@ScarpetFunction

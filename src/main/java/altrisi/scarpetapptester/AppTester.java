@@ -25,26 +25,20 @@ public enum AppTester implements Runnable { INSTANCE;
 	private App currentApp = null;
 	public static final Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
 	public static final Logger RESULT_LOGGER = LogManager.getLogger("Scarpet App Tester | Results");
-	static {
-		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
-		Appender ap = FileAppender.newBuilder().withFileName("results/result-" + now + ".txt").withName("Scarpet App Tester Result").build();
-		((org.apache.logging.log4j.core.Logger)RESULT_LOGGER).addAppender(ap);
-		ap.start();
-		RESULT_LOGGER.info("Where is this running??????????????????????????????????????????????????");
-	}
 	private final List<App> appQueue = new ArrayList<>();
 	public final CountDownLatch serverLoadedWorlds = new CountDownLatch(1);
 
 	@Override
 	public void run() {
-		LOGGER.info("App Tester thread started!");
-		RESULT_LOGGER.info("Starting testing session at... ");
+		attachNewAppender();
+		RESULT_LOGGER.info("*************************** Starting testing session at " + new Date() + " ***************************");
 		//prepareConfigs etc
 		try { serverLoadedWorlds.await(); }
 		catch (InterruptedException e) { throw crashThread(e); }
 		LOGGER.info("Received serverLoadedWorlds confirmation, starting!");
 		currentApp = new ScarpetApp("testapp");
 		currentApp.load();
+		currentApp.prepareTests(null/*TODO*/);
 		currentApp.runTests();
 		currentApp.unload();
 		try {
@@ -52,12 +46,9 @@ public enum AppTester implements Runnable { INSTANCE;
 		} catch (InterruptedException e) {
 			throw crashThread(e);
 		}
-		RESULT_LOGGER.info("Finishing testing session...");
-		try {
-			//ScarpetAppTester.getTaskQueue().put(()->CarpetServer.minecraft_server.stop(false));
-		} catch (Throwable e) {
-			throw crashThread(e);
-		}
+		RESULT_LOGGER.info("*************************** Finished testing session at " + new Date() + " ***************************");
+		
+		CarpetServer.minecraft_server.submit(() -> CarpetServer.minecraft_server.stop(false));
 	}
 
 	static CrashException crashThread(Throwable e) {
@@ -88,8 +79,16 @@ public enum AppTester implements Runnable { INSTANCE;
 	public ScarpetException registerException(Expression expr, String msg, ExpressionException e) {
 		var exception = new ScarpetException(expr, msg, e);
 		LOGGER.info("HELLO I FOUND A BUG");
-		currentApp().currentTest().attachException(exception);
+		if (currentApp().currentTest() != null)
+			currentApp().currentTest().attachException(exception);
 		return exception;
+	}
+	
+	private void attachNewAppender() {
+		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+		Appender ap = FileAppender.newBuilder().withFileName("results/result-" + now + ".txt").withName("Scarpet App Tester Result").build();
+		((org.apache.logging.log4j.core.Logger)RESULT_LOGGER).addAppender(ap);
+		ap.start();
 	}
 	
 }

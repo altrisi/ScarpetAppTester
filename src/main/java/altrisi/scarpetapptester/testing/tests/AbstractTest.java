@@ -16,7 +16,7 @@ abstract class AbstractTest implements Test {
 	protected Map<String, String> results = new HashMap<>();
 	protected boolean failed;
 	
-	public AbstractTest(App app, String name) {
+	protected AbstractTest(App app, String name) {
 		this.app = app;
 		this.name = name;
 	}

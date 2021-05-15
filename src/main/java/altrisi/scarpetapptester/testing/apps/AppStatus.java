@@ -26,6 +26,10 @@ public enum AppStatus {
 	 */
 	PREPARING_TESTS,
 	/**
+	 * The tests for the app are ready
+	 */
+	TESTS_READY,
+	/**
 	 * App's tests are being ran
 	 */
 	RUNNING_TESTS,

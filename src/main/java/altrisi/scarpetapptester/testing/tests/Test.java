@@ -39,9 +39,7 @@ public interface Test {
 		prepareTest();
 		
 		setStage(SYNC_PREPARING);
-		ThreadingUtils.runInMainThreadAndWait(() -> {
-			preTesting();
-		});
+		ThreadingUtils.runInMainThreadAndWait(this::preTesting);
 		ThreadingUtils.waitForSchedules();
 		
 		setStage(RUNNING);
@@ -56,9 +54,7 @@ public interface Test {
 		testFinishedChecks();
 		
 		setStage(SYNC_CHECKING);
-		ThreadingUtils.runInMainThreadAndWait(() -> {
-			afterTesting();
-		});
+		ThreadingUtils.runInMainThreadAndWait(this::afterTesting);
 		ThreadingUtils.waitForSchedules();
 		
 		setStage(FINISHING);

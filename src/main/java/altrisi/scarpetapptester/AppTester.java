@@ -1,12 +1,15 @@
 package altrisi.scarpetapptester;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.appender.FileAppender;
 
 import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
@@ -19,16 +22,22 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
 public enum AppTester implements Runnable { INSTANCE;
-	@Deprecated
-    private final List<ScarpetException> exceptionStorage = new ArrayList<ScarpetException>();
 	private App currentApp = null;
 	public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
+	public static Logger RESULT_LOGGER = LogManager.getLogger("Scarpet App Tester | Results");
+	static {
+		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+		Appender ap = FileAppender.newBuilder().withFileName("results/result-" + now + ".txt").withName("Scarpet App Tester Result").build();
+		((org.apache.logging.log4j.core.Logger)RESULT_LOGGER).addAppender(ap);
+		ap.start();
+	}
 	private final List<App> appQueue = new ArrayList<>();
 	public final CountDownLatch serverLoadedWorlds = new CountDownLatch(1);
 
 	@Override
 	public void run() {
 		LOGGER.info("App Tester thread started!");
+		RESULT_LOGGER.info("Starting testing session at... ");
 		//prepareConfigs etc
 		try { serverLoadedWorlds.await(); }
 		catch (InterruptedException e) { throw crashThread(e); }
@@ -38,15 +47,16 @@ public enum AppTester implements Runnable { INSTANCE;
 		currentApp.runTests();
 		currentApp.unload();
 		try {
-			Thread.sleep(6000);
-			LOGGER.info("Yeah, that did nothing...");
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			throw crashThread(e);
 		}
-		ThreadingUtils.runInMainThreadAndWait(() -> {
-			CarpetServer.minecraft_server.stop(false);
-			ThreadingUtils.getStepLatch().countDown();
-		});
+		RESULT_LOGGER.info("Finishing testing session...");
+		try {
+			ScarpetAppTester.getTaskQueue().put(()->CarpetServer.minecraft_server.stop(false));
+		} catch (Throwable e) {
+			throw crashThread(e);
+		}
 	}
 
 	static CrashException crashThread(Throwable e) {
@@ -71,19 +81,11 @@ public enum AppTester implements Runnable { INSTANCE;
 	}
 	
 	/**
-	 * @return an immutable copy of the current exception storage
-	 */
-	public List<ScarpetException> getExceptionStorage() {
-		return Collections.unmodifiableList(exceptionStorage);
-	}
-	
-	/**
-	 * Registers an exception into the current storage and assigns information to it
-	 * @return That exception, not sure why
+	 * Registers an exception into the current test and assigns information to it
+	 * @return The resulting {@link ScarpetException}, in order to be saved in the mixin
 	 */
 	public ScarpetException registerException(Expression expr, String msg, ExpressionException e) {
 		var exception = new ScarpetException(expr, msg, e);
-		exceptionStorage.add(exception);
 		LOGGER.info("HELLO I FOUND A BUG");
 		currentApp().currentTest().attachException(exception);
 		return exception;

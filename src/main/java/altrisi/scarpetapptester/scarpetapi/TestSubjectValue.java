@@ -3,7 +3,7 @@ package altrisi.scarpetapptester.scarpetapi;
 import altrisi.scarpetapptester.testing.subjects.TestSubject;
 import carpet.script.value.FrameworkValue;
 
-public class TestSubjectValue extends FrameworkValue {
+class TestSubjectValue extends FrameworkValue {
 
 	public final TestSubject subject;
 	

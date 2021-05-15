@@ -40,11 +40,15 @@ public class LoadingTest extends AbstractTest {
 		long start = System.nanoTime();
 		success = CarpetServer.scriptServer.addScriptHost(ScarpetAppTester.commandSource, app.name(), null, true, false, false);
 		long end = System.nanoTime();
-		elapsedTime = (end-start)/1000000;
+		elapsedTime = (end - start)/1000000;
 	}
 
 	@Override
-	public void testFinishedChecks() {}
+	public void testFinishedChecks() {
+		if (success && exception != null) {
+			//TODO Exception in a schedule
+		}
+	}
 
 	@Override
 	public void prepareTest() {}

@@ -17,7 +17,6 @@ import net.minecraft.util.crash.CrashException;
 public class ScarpetAppTester implements CarpetExtension, ModInitializer
 {
 	private static Thread asyncThread;
-    public static LogWritter writter;
     private static SynchronousQueue<Runnable> taskQueue = new SynchronousQueue<Runnable>();
     public static ServerCommandSource commandSource; 
 
@@ -26,7 +25,6 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     {
         CarpetServer.manageExtension(this);
         CarpetSettings.scriptsAutoload = false;
-        writter = new LogWritter();
         asyncThread = new Thread(AppTester.INSTANCE);
         asyncThread.setName("Scarpet App Tester Thread");
         asyncThread.setUncaughtExceptionHandler((thread, exception) -> {
@@ -68,7 +66,6 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 
     @Override
     public void onServerClosed(MinecraftServer server) {
-    	writter.close();
     }
     @Override public String version() { return "scarpet-app-tester"; }
     

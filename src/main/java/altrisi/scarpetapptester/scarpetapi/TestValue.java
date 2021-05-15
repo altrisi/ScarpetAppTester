@@ -6,7 +6,7 @@ import altrisi.scarpetapptester.testing.tests.Test;
 import carpet.script.CarpetEventServer.ScheduledCall;
 import carpet.script.value.FrameworkValue;
 
-public class TestValue extends FrameworkValue {
+class TestValue extends FrameworkValue {
 	public final Test test;
 	
 	/**

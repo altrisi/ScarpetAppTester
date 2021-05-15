@@ -42,19 +42,23 @@ public class ScarpetApp implements App {
 	@Override
 	public void load() {
 		if (status != QUEUED)
+			throw new IllegalStateException("App has already started");
 		status = LOADING;
 		currentTest = new LoadingTest(this);
 		currentTest.run();
 		host = ((LoadingTest)currentTest).resultHost;
+		currentTest = null;
 		status = JUST_LOADED;
 	}
 	
 	@Override
 	public void runTests() {
+		if (status != TESTS_READY)
 		status = RUNNING_TESTS;
 		for (Test test : tests) {
-			if (status == CRITICAL_FAILURE)
+			if (status == CRITICAL_FAILURE) {
 				break;
+			}
 			currentTest = test;
 			currentTest.run();
 		}
@@ -85,6 +89,7 @@ public class ScarpetApp implements App {
 	public void abort() {
 		// TODO Auto-generated method stub
 		status = CRITICAL_FAILURE;
+		AppTester.LOGGER.info("Critical failure during testing, aborting");
 	}
 	
 	@Override

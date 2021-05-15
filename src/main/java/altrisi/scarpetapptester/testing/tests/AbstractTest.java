@@ -1,7 +1,9 @@
 package altrisi.scarpetapptester.testing.tests;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
@@ -11,6 +13,8 @@ abstract class AbstractTest implements Test {
 	private final String name;
 	protected TestStage stage = TestStage.WAITING;
 	protected List<ScarpetException> exceptions = new ArrayList<>();
+	protected Map<String, String> results = new HashMap<>();
+	protected boolean failed;
 	
 	public AbstractTest(App app, String name) {
 		this.app = app;
@@ -42,6 +46,16 @@ abstract class AbstractTest implements Test {
 	@Override
 	public void attachException(ScarpetException exception) {
 		exceptions.add(exception);
+	}
+	
+	@Override
+	public void addResult(String left, String right) {
+		results.put(left, right);
+	}
+	
+	@Override
+	public void setFailed() {
+		this.failed = true;
 	}
 
 }

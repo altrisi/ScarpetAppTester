@@ -7,13 +7,14 @@ repositories {
 	maven {
 		url 'https://masa.dy.fi/maven'
 	}
+	maven { url 'https://jitpack.io' } // For temp Annotated Scarpet
 }
 
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
-version = project.minecraft_version+'-'+project.mod_version
+version = project.minecraft_version + '-' + project.mod_version
 group = project.maven_group
 
 dependencies {
@@ -21,7 +22,8 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation "carpet:fabric-carpet:${project.carpet_core_version}"
+	//modImplementation "carpet:fabric-carpet:${project.carpet_core_version}"
+	modImplementation 'com.github.altrisi:fabric-carpet:annotated-scarpet-SNAPSHOT'
 
 	// Fabric API. This is not necessary, but you can use it if you want
 	// modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"

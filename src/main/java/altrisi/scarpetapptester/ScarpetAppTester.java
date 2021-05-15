@@ -3,12 +3,10 @@ package altrisi.scarpetapptester;
 import java.util.concurrent.SynchronousQueue;
 
 import altrisi.scarpetapptester.mixins.Util_threadCrasherMixin;
-import altrisi.scarpetapptester.scarpetapi.ScarpetAPIFunctions;
+import altrisi.scarpetapptester.scarpetapi.ScarpetAPI;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import carpet.CarpetSettings;
-import carpet.script.CarpetExpression;
-
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -38,6 +36,11 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
     }
 
     @Override
+    public void onGameStarted() {
+    	ScarpetAPI.registerOurThings();
+    }
+    
+    @Override
     public void onServerLoaded(MinecraftServer server)
     {
         // reloading of /carpet settings is handled by carpet
@@ -66,13 +69,11 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 
     @Override
     public void onServerClosed(MinecraftServer server) {
+    	
     }
+    
     @Override public String version() { return "scarpet-app-tester"; }
     
-    @Override
-    public void scarpetApi(CarpetExpression expression) {
-    	ScarpetAPIFunctions.apply(expression.getExpr());
-    }
 
 	
 	/**

@@ -5,7 +5,7 @@ import carpet.script.value.FrameworkValue;
 
 class TestSubjectValue extends FrameworkValue {
 
-	public final TestSubject subject;
+	private final TestSubject subject;
 	
 	/**
 	 * Creates a {@link TestSubjectValue} out of a {@link TestSubject}.<br>
@@ -22,6 +22,10 @@ class TestSubjectValue extends FrameworkValue {
 	@Override
 	public boolean equals(Object o) {
 		return o instanceof TestSubjectValue ts && ts.subject == this.subject;
+	}
+	
+	public TestSubject getTestSubject() {
+		return subject;
 	}
 	
 	@Override

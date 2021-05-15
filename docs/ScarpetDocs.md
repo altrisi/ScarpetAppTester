@@ -67,4 +67,19 @@ create_test('Check blocks are placed correctly', testSubject, 'prepare_check_blo
 ));
 ```
 
-### TODO: Make `add_result()`
+### `add_result(test, resultName, result)`
+
+Adds a result to the specified test.
+
+Result name should be the name of what was being checked in that stage, and result should be, well, the result of such stage.
+
+For example, for the loading test, the equivalent in Scarpet would be:
+
+```py
+add_result(loadingTest, 'App load', 'Correct');
+add_result(loadingTest, 'Elapsed Time', '24ms');
+```
+
+### `set_failed(test)`
+
+Sets a test as failed.

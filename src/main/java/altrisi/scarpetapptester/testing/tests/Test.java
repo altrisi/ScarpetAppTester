@@ -145,6 +145,20 @@ public interface Test {
 	public TestResults getResults();
 	
 	/**
+	 * Used to allow Scarpet test handlers to add their results
+	 * They should appear in the {@link #getResults()} map 
+	 * @param left
+	 * @param right
+	 */
+	public void addResult(String left, String right);
+	
+	/**
+	 * Used to allow Scarpet test handlers to set the test as failed.
+	 * Should appear in the {@link #getResults()} result
+	 */
+	public void setFailed();
+	
+	/**
 	 * Attaches an exception that occurred during the test
 	 * @param exception The exception
 	 */

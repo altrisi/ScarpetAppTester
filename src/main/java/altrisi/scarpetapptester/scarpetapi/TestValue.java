@@ -7,7 +7,7 @@ import carpet.script.CarpetEventServer.ScheduledCall;
 import carpet.script.value.FrameworkValue;
 
 class TestValue extends FrameworkValue {
-	public final Test test;
+	private final Test test;
 	
 	/**
 	 * Creates a {@link TestValue} out of a {@link Test}
@@ -44,6 +44,10 @@ class TestValue extends FrameworkValue {
 	@Override //TODO Reconsider
 	public String getString() {
 		return test.getName();
+	}
+	
+	public Test getTest() {
+		return test;
 	}
 
 }

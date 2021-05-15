@@ -23,13 +23,14 @@ import net.minecraft.util.crash.CrashReportSection;
 
 public enum AppTester implements Runnable { INSTANCE;
 	private App currentApp = null;
-	public static Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
-	public static Logger RESULT_LOGGER = LogManager.getLogger("Scarpet App Tester | Results");
+	public static final Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
+	public static final Logger RESULT_LOGGER = LogManager.getLogger("Scarpet App Tester | Results");
 	static {
 		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 		Appender ap = FileAppender.newBuilder().withFileName("results/result-" + now + ".txt").withName("Scarpet App Tester Result").build();
 		((org.apache.logging.log4j.core.Logger)RESULT_LOGGER).addAppender(ap);
 		ap.start();
+		RESULT_LOGGER.info("Where is this running??????????????????????????????????????????????????");
 	}
 	private final List<App> appQueue = new ArrayList<>();
 	public final CountDownLatch serverLoadedWorlds = new CountDownLatch(1);
@@ -53,7 +54,7 @@ public enum AppTester implements Runnable { INSTANCE;
 		}
 		RESULT_LOGGER.info("Finishing testing session...");
 		try {
-			ScarpetAppTester.getTaskQueue().put(()->CarpetServer.minecraft_server.stop(false));
+			//ScarpetAppTester.getTaskQueue().put(()->CarpetServer.minecraft_server.stop(false));
 		} catch (Throwable e) {
 			throw crashThread(e);
 		}

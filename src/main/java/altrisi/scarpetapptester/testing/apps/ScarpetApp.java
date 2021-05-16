@@ -33,6 +33,8 @@ public class ScarpetApp implements App {
 
 	@Override
 	public Test currentTest() {
+		if (currentTest == null)
+			throw new IllegalStateException("No tests running");
 		return currentTest;
 	}
 

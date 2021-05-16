@@ -4,15 +4,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.appender.FileAppender;
 
+import altrisi.scarpetapptester.config.AppConfig;
 import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
+import altrisi.scarpetapptester.testing.apps.AppStatus;
 import altrisi.scarpetapptester.testing.apps.ScarpetApp;
 import carpet.CarpetServer;
 import carpet.script.Expression;
@@ -25,33 +29,39 @@ public enum AppTester implements Runnable { INSTANCE;
 	private App currentApp = null;
 	public static final Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
 	public static final Logger RESULT_LOGGER = LogManager.getLogger("Scarpet App Tester | Results");
-	private final List<App> appQueue = new ArrayList<>();
+	private final List<Pair<App, AppConfig>> appQueue = new ArrayList<>();
 	public final CountDownLatch serverLoadedWorlds = new CountDownLatch(1);
 
 	@Override
 	public void run() {
-		attachNewAppender();
-		RESULT_LOGGER.info("*************************** Starting testing session at " + new Date() + " ***************************");
+		initialize();
+		RESULT_LOGGER.info("************************* Starting testing session at " + new Date() + " *************************");
 		//prepareConfigs etc
 		try { serverLoadedWorlds.await(); }
 		catch (InterruptedException e) { throw crashThread(e); }
 		LOGGER.info("Received serverLoadedWorlds confirmation, starting!");
-		currentApp = new ScarpetApp("testapp");
-		currentApp.load();
-		currentApp.prepareTests(null/*TODO*/);
-		currentApp.runTests();
-		currentApp.unload();
+		
+		appQueue.add(Pair.of(new ScarpetApp("testapp"), null));
+		for (Pair<App, AppConfig> appInfo : appQueue) {
+			currentApp = appInfo.getLeft();
+			currentApp.load();
+			currentApp.prepareTests(appInfo.getRight());
+			currentApp.runTests();
+			currentApp.unload();
+		}
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			throw crashThread(e);
 		}
-		RESULT_LOGGER.info("*************************** Finished testing session at " + new Date() + " ***************************");
+		RESULT_LOGGER.info("************************* Finished testing session at " + new Date() + " *************************");
 		
 		CarpetServer.minecraft_server.submit(() -> CarpetServer.minecraft_server.stop(false));
 	}
 
 	static CrashException crashThread(Throwable e) {
+		if (e instanceof InterruptedException && CarpetServer.minecraft_server == null)
+			throw new CompletionException("Exception in main thread", e); //TODO Well, it crashed. DO SOMETHING DUDDEEE
 		LOGGER.fatal(e.getMessage() != null ? e.getMessage().toUpperCase() : "THREAD CRASHED", e);
 		CrashReport crash = CrashReport.create(e, "Something crashed the Scarpet App Tester thread");
 		CrashReportSection ourSection = crash.addElement("Scarpet App Tester");
@@ -79,12 +89,16 @@ public enum AppTester implements Runnable { INSTANCE;
 	public ScarpetException registerException(Expression expr, String msg, ExpressionException e) {
 		var exception = new ScarpetException(expr, msg, e);
 		LOGGER.info("HELLO I FOUND A BUG");
-		if (currentApp().currentTest() != null)
+		if (currentApp().currentStatus() == AppStatus.RUNNING_TESTS || currentApp().currentStatus() == AppStatus.LOADING) {
 			currentApp().currentTest().attachException(exception);
+		} else {
+			LOGGER.info("Captured exception outside of any running tests! May be a bug in a tester app!");
+		}
 		return exception;
 	}
 	
-	private void attachNewAppender() {
+	private void initialize() {
+		// Add appender to result logger
 		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 		Appender ap = FileAppender.newBuilder().withFileName("results/result-" + now + ".txt").withName("Scarpet App Tester Result").build();
 		((org.apache.logging.log4j.core.Logger)RESULT_LOGGER).addAppender(ap);

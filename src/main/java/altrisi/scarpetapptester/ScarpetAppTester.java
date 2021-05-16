@@ -1,5 +1,6 @@
 package altrisi.scarpetapptester;
 
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.SynchronousQueue;
 
 import altrisi.scarpetapptester.mixins.Util_threadCrasherMixin;
@@ -26,6 +27,8 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
         asyncThread = new Thread(AppTester.INSTANCE);
         asyncThread.setName("Scarpet App Tester Thread");
         asyncThread.setUncaughtExceptionHandler((thread, exception) -> {
+        	if (exception instanceof CompletionException ce && "Exception in main thread".equals(ce.getMessage()))
+        		return;
 			if (!(exception instanceof CrashException)) {
 				AppTester.LOGGER.fatal("Crashing with an unhandled exception", exception);
 				exception = AppTester.crashThread(exception);
@@ -69,7 +72,8 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 
     @Override
     public void onServerClosed(MinecraftServer server) {
-    	
+    	// In case this was a crash, stop our thread
+    	asyncThread.interrupt();
     }
     
     @Override public String version() { return "scarpet-app-tester"; }

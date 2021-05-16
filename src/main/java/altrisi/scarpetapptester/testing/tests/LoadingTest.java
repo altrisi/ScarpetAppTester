@@ -16,6 +16,8 @@ public class LoadingTest extends AbstractTest {
 	public CarpetScriptHost resultHost;
 	private long elapsedTime;
 	private ScarpetException exception;
+	private long functionNumber;
+	private long globalVars;
 
 	public LoadingTest(App app) {
 		super(app, "App Loading");
@@ -25,6 +27,8 @@ public class LoadingTest extends AbstractTest {
 	public void finishTest() {
 		if (success) {
 			resultHost = (CarpetScriptHost) CarpetServer.scriptServer.getHostByName(app.name());
+			functionNumber = resultHost.globalFunctionNames(resultHost.main, s -> true).count();
+			globalVars = resultHost.globalVariableNames(resultHost.main, s -> true).count();
 		} else {
 			AppTester.LOGGER.fatal("Failed to load app " + app);
 		}
@@ -62,13 +66,17 @@ public class LoadingTest extends AbstractTest {
 	public TestResults getResults() {
 		// Cleanup
 		resultHost = null;
-		return new LoadResult(success, elapsedTime, exception == null ? Collections.singletonList(exception) : Collections.emptyList());
+		return new LoadResult(success, elapsedTime, functionNumber, globalVars, exception == null ? Collections.singletonList(exception) : Collections.emptyList());
 	}
 	
-	public record LoadResult(boolean successful, long elapsedTime, List<ScarpetException> exceptions) implements TestResults {
+	public record LoadResult(boolean successful, long elapsedTime, long functionNumber, long globalVars, List<ScarpetException> exceptions) 
+		implements TestResults {
 		@Override
 		public Map<String, String> getResultsMap() {
-			return Map.of("App load", successful ? "Correct" : "Failed", "Elapsed time", elapsedTime + "ms");
+			return Map.of("App load", successful ? "Correct" : "Failed",
+					"Elapsed time", elapsedTime + "ms", 
+					"Function number", successful ? Long.toString(functionNumber) : "N/A",
+					"Global variable number", successful ? Long.toString(globalVars) : "N/A");
 		}
 		
 	}

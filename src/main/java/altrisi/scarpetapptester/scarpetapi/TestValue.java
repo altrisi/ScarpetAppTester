@@ -41,7 +41,7 @@ class TestValue extends FrameworkValue {
 		return test.hashCode();
 	}
 	
-	@Override //TODO Reconsider
+	@Override
 	public String getString() {
 		return test.getName();
 	}

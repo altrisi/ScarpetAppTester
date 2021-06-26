@@ -1,6 +1,5 @@
 package altrisi.scarpetapptester.testing.apps;
 
-import altrisi.scarpetapptester.config.AppConfig;
 import altrisi.scarpetapptester.testing.tests.Test;
 import carpet.script.CarpetScriptHost;
 
@@ -42,7 +41,7 @@ public interface App {
 	 * Calls the app to prepare tests. Must be called when app is loaded, and must call the Scarpet event handler. 
 	 * Sets status to {@link AppStatus#TESTS_READY} when done, {@link AppStatus#PREPARING_TESTS} while preparing tests
 	 */
-	public void prepareTests(AppConfig config);
+	public void prepareTests();
 	
 	/**
 	 * Calls the app to run tests. Throws if already ran or running

@@ -16,7 +16,7 @@ public class LoadingTest extends AbstractTest {
 	public CarpetScriptHost resultHost;
 	private long elapsedTime;
 	private ScarpetException exception;
-	private long functionNumber;
+	private long functionCount;
 	private long globalVars;
 
 	public LoadingTest(App app) {
@@ -27,10 +27,11 @@ public class LoadingTest extends AbstractTest {
 	public void finishTest() {
 		if (success) {
 			resultHost = (CarpetScriptHost) CarpetServer.scriptServer.getHostByName(app.name());
-			functionNumber = resultHost.globalFunctionNames(resultHost.main, s -> true).count();
+			functionCount = resultHost.globalFunctionNames(resultHost.main, s -> true).count();
 			globalVars = resultHost.globalVariableNames(resultHost.main, s -> true).count();
 		} else {
 			AppTester.LOGGER.fatal("Failed to load app " + app);
+			AppTester.INSTANCE.currentApp().abort();
 		}
 	}
 
@@ -42,15 +43,15 @@ public class LoadingTest extends AbstractTest {
 	@Override
 	public void runTests() {
 		long start = System.nanoTime();
-		success = CarpetServer.scriptServer.addScriptHost(ScarpetAppTester.commandSource, app.name(), null, true, false, false);
+		success = CarpetServer.scriptServer.addScriptHost(ScarpetAppTester.commandSource, app.name(), null, true, false, false, null);
 		long end = System.nanoTime();
 		elapsedTime = (end - start)/1000000;
 	}
 
 	@Override
 	public void testFinishedChecks() {
-		if (success && exception != null) {
-			//TODO Exception in a schedule
+		if (success && exception != null) { // Exception in a schedule after correct load
+			success = false; // TODO Decide whether to allow continuing with an exception in a schedule
 		}
 	}
 
@@ -66,7 +67,7 @@ public class LoadingTest extends AbstractTest {
 	public TestResults getResults() {
 		// Cleanup
 		resultHost = null;
-		return new LoadResult(success, elapsedTime, functionNumber, globalVars, exception == null ? Collections.singletonList(exception) : Collections.emptyList());
+		return new LoadResult(success, elapsedTime, functionCount, globalVars, exception == null ? Collections.singletonList(exception) : Collections.emptyList());
 	}
 	
 	public record LoadResult(boolean successful, long elapsedTime, long functionNumber, long globalVars, List<ScarpetException> exceptions) 
@@ -75,8 +76,8 @@ public class LoadingTest extends AbstractTest {
 		public Map<String, String> getResultsMap() {
 			return Map.of("App load", successful ? "Correct" : "Failed",
 					"Elapsed time", elapsedTime + "ms", 
-					"Function number", successful ? Long.toString(functionNumber) : "N/A",
-					"Global variable number", successful ? Long.toString(globalVars) : "N/A");
+					"Function count", successful ? Long.toString(functionNumber) : "N/A",
+					"Global variable count", successful ? Long.toString(globalVars) : "N/A");
 		}
 		
 	}

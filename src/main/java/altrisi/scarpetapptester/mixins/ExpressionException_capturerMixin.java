@@ -17,14 +17,13 @@ import carpet.script.Tokenizer;
 import carpet.script.exception.ExpressionException;
 import carpet.script.value.FunctionValue;
 
-@Mixin(ExpressionException.class)
+@Mixin(value = ExpressionException.class, remap = false)
 abstract class ExpressionException_capturerMixin {
 	private ScarpetException storedException;
 	
 	@Inject(
 		method = "<init>(Lcarpet/script/Context;Lcarpet/script/Expression;Lcarpet/script/Tokenizer$Token;Ljava/lang/String;Ljava/util/List;)V",
-		at = @At("RETURN"),
-		remap = false
+		at = @At("RETURN")
 	) // Not catchable 
 	private void startExc(Context c, Expression e, Tokenizer.Token t, String message, List<FunctionValue> stack, CallbackInfo ci) {
 		this.storedException = AppTester.INSTANCE.registerException(e, message, (ExpressionException)(Object)this);
@@ -32,14 +31,13 @@ abstract class ExpressionException_capturerMixin {
 	
 	@Inject(
 			method = "<init>(Lcarpet/script/Context;Lcarpet/script/Expression;Lcarpet/script/Tokenizer$Token;Ljava/util/function/Supplier;Ljava/util/List;)V",
-			at = @At("RETURN"),
-			remap = false
+			at = @At("RETURN")
 	) // Catchable
 	private void startExc(Context c, Expression e, Tokenizer.Token t, Supplier<String> message, List<FunctionValue> stack, CallbackInfo ci) {
 		this.storedException = AppTester.INSTANCE.registerException(e, message.get(), (ExpressionException)(Object) this); //TODO Change way message is gotten?
 	}
 	
-	@Inject(method = "getMessage", at = @At("RETURN"), remap = false)
+	@Inject(method = "getMessage", at = @At("RETURN"))
 	private void setUnhandled(CallbackInfoReturnable<String> cir) {
 		storedException.setUnhandled();
 	}

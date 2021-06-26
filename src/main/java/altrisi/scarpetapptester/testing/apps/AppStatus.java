@@ -54,7 +54,7 @@ public enum AppStatus {
 	 */
 	FINISHED,
 	/**
-	 * App testing has failed critically
+	 * App testing has failed critically. Currently only used when load failed
 	 */
 	CRITICAL_FAILURE;
 }

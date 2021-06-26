@@ -2,6 +2,7 @@ package altrisi.scarpetapptester.testing.apps;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import altrisi.scarpetapptester.AppTester;
 import altrisi.scarpetapptester.ScarpetAppTester;
@@ -17,13 +18,15 @@ import static altrisi.scarpetapptester.testing.apps.AppStatus.*;
 
 public class ScarpetApp implements App {
 	private final String name;
+	private final AppConfig configFields;
 	private Test currentTest;
 	private AppStatus status = QUEUED;
 	private List<Test> tests = new ArrayList<>();
 	private CarpetScriptHost host;
 	
-	public ScarpetApp(String name) {
-		this.name = name;
+	public ScarpetApp(String name, AppConfig config) {
+		this.name = Objects.requireNonNull(name, "name must not be null");
+		this.configFields = Objects.requireNonNull(config, "config must not be null");
 	}
 	
 	@Override
@@ -56,8 +59,9 @@ public class ScarpetApp implements App {
 	}
 	
 	@Override
-	public void prepareTests(AppConfig config) {
+	public void prepareTests() {
 		status = PREPARING_TESTS;
+		configFields.hi();
 		//...
 		ScarpetEvents.PREPARING_TESTS.dispatch(this);
 		status = TESTS_READY;

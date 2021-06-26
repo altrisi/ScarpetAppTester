@@ -7,17 +7,16 @@ import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.appender.FileAppender;
 
 import altrisi.scarpetapptester.config.AppConfig;
+import altrisi.scarpetapptester.config.AppTesterConfig;
 import altrisi.scarpetapptester.exceptionhandling.ScarpetException;
 import altrisi.scarpetapptester.testing.apps.App;
 import altrisi.scarpetapptester.testing.apps.AppStatus;
-import altrisi.scarpetapptester.testing.apps.ScarpetApp;
 import carpet.CarpetServer;
 import carpet.script.Expression;
 import carpet.script.exception.ExpressionException;
@@ -29,24 +28,27 @@ public enum AppTester implements Runnable { INSTANCE;
 	private App currentApp = null;
 	public static final Logger LOGGER = LogManager.getLogger("Scarpet App Tester");
 	public static final Logger RESULT_LOGGER = LogManager.getLogger("Scarpet App Tester | Results");
-	private final List<Pair<App, AppConfig>> appQueue = new ArrayList<>();
+	private final List<App> appQueue = new ArrayList<>();
 	public final CountDownLatch serverLoadedWorlds = new CountDownLatch(1);
+	private AppTesterConfig config;
 
 	@Override
 	public void run() {
-		initialize();
+		initializeLogger();
+		initializeConfig();
 		RESULT_LOGGER.info("************************* Starting testing session at " + new Date() + " *************************");
 		//prepareConfigs etc
 		try { serverLoadedWorlds.await(); }
 		catch (InterruptedException e) { throw crashThread(e); }
 		LOGGER.info("Received serverLoadedWorlds confirmation, starting!");
 		
-		appQueue.add(Pair.of(new ScarpetApp("testapp"), null));
-		for (Pair<App, AppConfig> appInfo : appQueue) {
-			currentApp = appInfo.getLeft();
+		for (App app : appQueue) {
+			currentApp = app;
 			currentApp.load();
-			currentApp.prepareTests(appInfo.getRight());
-			currentApp.runTests();
+			if (currentApp.currentStatus() != AppStatus.CRITICAL_FAILURE) {
+				currentApp.prepareTests();
+				currentApp.runTests();
+			}
 			currentApp.unload();
 		}
 		try {
@@ -76,7 +78,7 @@ public enum AppTester implements Runnable { INSTANCE;
 	}
 	
 	/**
-	 * @return The current instance of {@link App} being tested
+	 * @return The current {@link App} instance being tested
 	 */
 	public App currentApp() {
 		return currentApp;
@@ -97,7 +99,26 @@ public enum AppTester implements Runnable { INSTANCE;
 		return exception;
 	}
 	
-	private void initialize() {
+	private void initializeConfig() {
+		// TODO Make this load an actual file
+		this.config = AppConfig.GSON.fromJson("""
+        		{
+    			"apps": [
+    				{
+    					"name": "testapp",
+    					"hi": "Yes"
+    				},
+    				{
+    					"name": "App2",
+    					"hi": "Nope"
+    				}
+    			]
+    		}
+    		""", AppTesterConfig.class);
+		config.apps().forEach(config -> appQueue.add(config.createApp()));
+	}
+	
+	private void initializeLogger() {
 		// Add appender to result logger
 		String now = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 		Appender ap = FileAppender.newBuilder().withFileName("results/result-" + now + ".txt").withName("Scarpet App Tester Result").build();

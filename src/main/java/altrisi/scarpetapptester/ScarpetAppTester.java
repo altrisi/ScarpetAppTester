@@ -33,7 +33,7 @@ public class ScarpetAppTester implements CarpetExtension, ModInitializer
 				AppTester.LOGGER.fatal("Crashing with an unhandled exception", exception);
 				exception = AppTester.crashThread(exception);
 			}
-			Util_threadCrasherMixin.invokeMethod_18347(thread, exception);
+			Util_threadCrasherMixin.crashThread(thread, exception);
 		});
         asyncThread.start();
     }
